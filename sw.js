@@ -1,6 +1,6 @@
 // Offline-Cache für die Standkasse.
 // Nach einer Änderung an der App die Versionsnummer erhöhen (v1 -> v2), damit das iPad die neue Version lädt.
-const CACHE = 'standkasse-v3';
+const CACHE = 'standkasse-v4';
 const FILES = [
   './',
   './index.html',
