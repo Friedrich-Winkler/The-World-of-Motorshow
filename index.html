@@ -37,9 +37,8 @@ header.top{display:flex;align-items:center;gap:10px;
 .stand-btn{flex:1;max-width:280px;display:flex;align-items:center;justify-content:center;gap:8px;
   font-size:18px;font-weight:750;padding:12px 10px;border-radius:14px;border:2px solid var(--line);
   background:var(--tile);white-space:nowrap}
-.stand-btn .e{font-size:22px}
 .stand-btn.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-.icon-btn{display:flex;align-items:center;gap:6px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);
+.icon-btn{display:flex;align-items:center;gap:8px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);
   background:var(--tile);font-size:16px;font-weight:650;white-space:nowrap}
 .icon-btn:active,.stand-btn:active{transform:scale(.97)}
 
@@ -52,8 +51,11 @@ main.pos{display:grid;grid-template-columns:1fr 350px;min-height:0}
   transition:transform .07s ease}
 .tile:active{transform:scale(.94);background:var(--tile2)}
 .tile.has{border-color:var(--accent);background:var(--tile2)}
-.tile .pic{font-size:58px;line-height:1;height:74px;display:flex;align-items:center;justify-content:center}
-.tile img{width:76px;height:76px;object-fit:cover;border-radius:14px;display:block}
+.tile .pic{width:80px;height:80px;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.ic{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.ic .f{stroke:none}
+.ui{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.tile img{width:80px;height:80px;object-fit:cover;border-radius:14px;display:block}
 .tile .name{font-size:16px;font-weight:750;text-align:center;line-height:1.15}
 .tile .price{font-size:15px;color:var(--muted)}
 .badge{position:absolute;top:8px;right:8px;min-width:36px;height:36px;padding:0 9px;border-radius:18px;
@@ -128,16 +130,19 @@ table.t tr.sum td{font-weight:800;border-bottom:none}
 /* Einstellungen */
 .set-sec h2{margin:22px 0 4px;font-size:20px}
 .set-sec h3{margin:14px 0 8px;font-size:13px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
-.prow{display:grid;grid-template-columns:56px 58px 1fr 96px 128px 44px 44px;gap:8px;align-items:center;margin-bottom:8px}
+.prow{display:grid;grid-template-columns:56px 170px 1fr 96px 128px 44px 44px;gap:8px;align-items:center;margin-bottom:8px}
 .prow input,.prow select{width:100%;padding:11px 10px;border-radius:11px;border:2px solid var(--line);background:var(--tile);color:var(--text);font-size:16px}
-.prow .emo{text-align:center;font-size:22px;padding:8px 4px}
 .prow .ph{position:relative;width:56px;height:48px;border-radius:11px;border:2px dashed var(--line);background:var(--tile);
-  display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;padding:0}
-.prow .ph img{width:100%;height:100%;object-fit:cover}
+  display:flex;align-items:center;justify-content:center;overflow:hidden;padding:4px;color:var(--text)}
+.prow .ph .ic{width:38px;height:38px}
+.prow .ph .cam{position:absolute;right:2px;bottom:2px;width:18px;height:18px;border-radius:6px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center}
+.prow .ph .cam .ui{width:13px;height:13px}
+.prow .sq{display:flex;align-items:center;justify-content:center}
+.prow .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .prow .sq{height:48px;border-radius:11px;border:2px solid var(--line);background:var(--tile);font-size:17px;padding:0}
 .prow .rm-img{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:9px;background:#000a;color:#fff;font-size:11px;line-height:18px}
 .hint{color:var(--muted);font-size:14px;line-height:1.5}
-.lbl-row{display:grid;grid-template-columns:56px 58px 1fr 96px 128px 44px 44px;gap:8px;color:var(--muted);font-size:12px;margin:0 0 4px}
+.lbl-row{display:grid;grid-template-columns:56px 170px 1fr 96px 128px 44px 44px;gap:8px;color:var(--muted);font-size:12px;margin:0 0 4px}
 
 .dlg{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
 .dlg.open{display:flex}
@@ -164,9 +169,9 @@ a.btn{text-decoration:none;color:var(--accent-ink)}
   .stand-btn{font-size:15px;padding:10px 6px}
   .icon-btn .t{display:none}
   .grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:9px}
-  .tile{min-height:124px}.tile .pic{font-size:44px;height:56px}.tile img{width:58px;height:58px}
+  .tile{min-height:124px}.tile .pic{width:60px;height:60px}.tile img{width:60px;height:60px}
   .total strong{font-size:32px}
-  .prow,.lbl-row{grid-template-columns:48px 50px 1fr 80px;}
+  .prow,.lbl-row{grid-template-columns:52px 1fr 1fr 80px;}
   .prow select,.prow .sq,.lbl-row .opt{grid-column:span 1}
 }
 </style>
@@ -175,10 +180,10 @@ a.btn{text-decoration:none;color:var(--accent-ink)}
 <div class="app">
   <header class="top">
     <div class="stands" id="stands"></div>
-    <button class="icon-btn" id="btnReport">📊 <span class="t">Bilanz</span></button>
-    <button class="icon-btn" id="btnSettings" aria-label="Einstellungen">⚙️</button>
+    <button class="icon-btn" id="btnReport"><span class="ico" data-ui="chart"></span><span class="t">Bilanz</span></button>
+    <button class="icon-btn" id="btnSettings" aria-label="Einstellungen"><span class="ico" data-ui="gear"></span><span class="t">Produkte</span></button>
   </header>
-  <div class="install" id="install">📲 <span>Als App nutzen: in Safari auf <b>Teilen</b> tippen → <b>„Zum Home-Bildschirm“</b>.</span><button id="installX" aria-label="Schließen">✕</button></div>
+  <div class="install" id="install"><span>Als App nutzen: in Safari auf <b>Teilen</b> tippen → <b>„Zum Home-Bildschirm“</b>.</span><button id="installX" aria-label="Schließen">✕</button></div>
   <main class="pos">
     <section class="products" id="products"></section>
     <aside class="cart">
@@ -188,7 +193,7 @@ a.btn{text-decoration:none;color:var(--accent-ink)}
         <div class="total"><span>Summe</span><strong class="num" id="total">0,00 €</strong></div>
         <div class="given" id="given"></div>
         <div class="change num" id="change"></div>
-        <button class="book" id="btnBook" disabled>✓ Verkauf buchen</button>
+        <button class="book" id="btnBook" disabled>Verkauf buchen</button>
       </div>
     </aside>
   </main>
@@ -200,7 +205,7 @@ a.btn{text-decoration:none;color:var(--accent-ink)}
   <div class="sheet-body"><div class="wrap">
     <div class="toolbar">
       <select class="big" id="daySel"></select>
-      <button class="btn primary" id="btnPdf">📄 PDF erstellen</button>
+      <button class="btn primary" id="btnPdf">PDF erstellen</button>
       <span style="flex:1"></span>
       <button class="btn danger" id="btnReset">Alle Daten löschen</button>
     </div>
@@ -216,7 +221,7 @@ a.btn{text-decoration:none;color:var(--accent-ink)}
       <label class="hint" for="evName">Name der Veranstaltung (steht oben auf dem PDF)</label>
       <div style="margin-top:8px"><input class="big" id="evName" style="width:100%"></div>
     </div>
-    <p class="hint">Änderungen werden sofort gespeichert. Tippe auf 📷, um ein eigenes Foto statt des Symbols zu nehmen. Pfand-Rückgabe geht mit negativem Preis (z.&nbsp;B. „-2,00“).</p>
+    <p class="hint">Änderungen werden sofort gespeichert. Tippe auf das Bild links, um ein eigenes Foto hochzuladen. Ohne Foto wird das gewählte Symbol angezeigt. Pfand-Rückgabe geht mit negativem Preis (z.&nbsp;B. „-2,00“).</p>
     <div id="settingsBody"></div>
     <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn danger" id="btnDefaults">Beispiel-Produkte wiederherstellen</button>
@@ -239,35 +244,140 @@ a.btn{text-decoration:none;color:var(--accent-ink)}
 
 /* ================= Grunddaten ================= */
 const STANDS = {
-  imbiss: { name: 'Imbiss', emoji: '🌭' },
-  suess:  { name: 'Süßigkeiten', emoji: '🍭' }
+  imbiss: { name: 'Imbiss' },
+  suess:  { name: 'Süßigkeiten' }
 };
 const CATS = [['getraenke', 'Getränke'], ['produkte', 'Produkte']];
 
-// Beispiel-Produkte – Preise in Cent. In der App unter ⚙️ änderbar.
+// Beispiel-Produkte – Preise in Cent. In der App unter „Produkte“ änderbar.
 const DEFAULTS = [
-  ['imbiss','getraenke','Stilles Wasser','💧',250], ['imbiss','getraenke','Sprudelwasser','🫧',250],
-  ['imbiss','getraenke','Medium-Wasser','💦',250], ['imbiss','getraenke','Cola','🥤',300],
-  ['imbiss','getraenke','Fanta','🍊',300], ['imbiss','getraenke','Sprite','🍋',300],
-  ['imbiss','getraenke','Slushy','🧊',350], ['imbiss','getraenke','Radler','🍻',350],
-  ['imbiss','getraenke','Bitburger','🍺',400],
-  ['imbiss','produkte','Pommes','🍟',400], ['imbiss','produkte','Bratwurst mit Brötchen','🌭',400],
-  ['imbiss','produkte','Currywurst mit Brötchen','🥖',450], ['imbiss','produkte','Currywurst mit Pommes','🍛',750],
-  ['suess','getraenke','Cola','🥤',250], ['suess','getraenke','Wasser','💧',200],
-  ['suess','getraenke','Slush-Eis','🧊',300], ['suess','getraenke','Kakao','☕',250],
-  ['suess','produkte','Gebrannte Mandeln','🥜',400], ['suess','produkte','Zuckerwatte','☁️',300],
-  ['suess','produkte','Popcorn','🍿',300], ['suess','produkte','Schokofrüchte','🍓',350],
-  ['suess','produkte','Lolli','🍭',150], ['suess','produkte','Fruchtgummi','🍬',250],
-  ['suess','produkte','Crêpe','🥞',400]
+  ['imbiss','getraenke','Stilles Wasser','still',250], ['imbiss','getraenke','Sprudelwasser','sprudel',250],
+  ['imbiss','getraenke','Medium-Wasser','medium',250], ['imbiss','getraenke','Cola','cola',300],
+  ['imbiss','getraenke','Fanta','fanta',300], ['imbiss','getraenke','Sprite','sprite',300],
+  ['imbiss','getraenke','Slushy','slushy',350], ['imbiss','getraenke','Radler','radler',350],
+  ['imbiss','getraenke','Bitburger','bier',400],
+  ['imbiss','produkte','Pommes','pommes',400], ['imbiss','produkte','Bratwurst mit Brötchen','bratwurst',400],
+  ['imbiss','produkte','Currywurst mit Brötchen','currybroetchen',450], ['imbiss','produkte','Currywurst mit Pommes','currypommes',750],
+  ['suess','getraenke','Cola','cola',250], ['suess','getraenke','Wasser','still',200],
+  ['suess','getraenke','Slush-Eis','slushy',300], ['suess','getraenke','Kakao','kaffee',250],
+  ['suess','produkte','Gebrannte Mandeln','mandeln',400], ['suess','produkte','Zuckerwatte','zuckerwatte',300],
+  ['suess','produkte','Popcorn','popcorn',300], ['suess','produkte','Schokofrüchte','schokofrucht',350],
+  ['suess','produkte','Lolli','lolli',150], ['suess','produkte','Fruchtgummi','fruchtgummi',250],
+  ['suess','produkte','Crêpe','crepe',400]
 ];
-const makeDefaults = () => DEFAULTS.map(([stand,cat,name,emoji,price]) => ({ id: uid(), stand, cat, name, emoji, price, img: '' }));
+const makeDefaults = () => DEFAULTS.map(([stand,cat,name,icon,price]) => ({ id: uid(), stand, cat, name, icon, price, img: '' }));
+
+/* ================= Eigene Symbole (statt Emojis) ================= */
+const IC = {
+  water:'#7cc7ff', cola:'#b8322a', fanta:'#ff8a1f', sprite:'#6fcf4f', energy:'#3d5afe', slushR:'#ef4b5c', slushB:'#4aa8ff',
+  beer:'#f2b632', foam:'#f6f1e6', radler:'#f3d660', coffee:'#8a5a3b', sausage:'#c26a3a', bun:'#e2ae68', fries:'#ffd23f',
+  box:'#e2483d', sauce:'#d9381e', mustard:'#f4c430', meat:'#8b4a2b', salad:'#6fcf4f', pink:'#ff7eb6', choc:'#6b3e26',
+  paper:'#e9dcc4', almond:'#b5653a', berry:'#e8344a', gummy:'#ff5a6e', crepe:'#f0c987', plate:'#3a4048'
+};
+const sv = (s) => `<svg class="ic" viewBox="0 0 64 64" aria-hidden="true">${s}</svg>`;
+const fl = (c, d, extra = '') => `<path class="f" fill="${c}" d="${d}" ${extra}/>`;
+const BOTTLE = 'M27 5h10v7c0 3 6 5 6 11v31a4 4 0 0 1-4 4H25a4 4 0 0 1-4-4V23c0-6 6-8 6-11z';
+const bottle = (bubbles) => sv(fl(IC.water, 'M21.5 32h21v22a3.5 3.5 0 0 1-3.5 3.5H25a3.5 3.5 0 0 1-3.5-3.5z') + bubbles +
+  `<path d="${BOTTLE}"/><path d="M27 9h10M21 26h22"/>`);
+const CUP = 'M18 20h28l-3.2 35.3a3 3 0 0 1-3 2.7H24.2a3 3 0 0 1-3-2.7z';
+const can = (band, extra = '') => sv(`<rect class="f" fill="${band}" x="19.5" y="24" width="25" height="20"/>` + extra +
+  '<rect x="19" y="13" width="26" height="44" rx="4"/><path d="M22 13l1.5-4h17l1.5 4M29 9h6"/>');
+const trayFood = (right) => sv(
+  `<rect class="f" fill="${IC.sausage}" x="9" y="32" width="8" height="8" rx="3"/><rect class="f" fill="${IC.sausage}" x="18" y="31" width="8" height="8" rx="3"/><rect class="f" fill="${IC.sausage}" x="27" y="32" width="8" height="8" rx="3"/>` +
+  `<path stroke="${IC.sauce}" stroke-width="3.6" d="M9 32c3-3 5 1 8-1s5 2 8-1 5 2 8 0"/>` + right);
+const ICONS = {
+  still: bottle(''),
+  medium: bottle('<circle cx="28" cy="49" r="1.6"/><circle cx="36" cy="42" r="1.3"/>'),
+  sprudel: bottle('<circle cx="27" cy="50" r="2"/><circle cx="36" cy="45" r="1.6"/><circle cx="30" cy="38" r="1.3"/><circle cx="37" cy="53" r="1.6"/>'),
+  cola: sv(fl(IC.cola, 'M19.6 32h24.8l-2.1 23.4a2.5 2.5 0 0 1-2.5 2.2H24.2a2.5 2.5 0 0 1-2.5-2.2z') +
+    `<path stroke="${IC.slushR}" d="M35 16l4-11h6"/><path d="${CUP}"/><path d="M16 20h32M18.5 20l1.5-4h24l1.5 4"/>`),
+  glas: sv(fl(IC.water, 'M19.6 32h24.8l-2.1 23.4a2.5 2.5 0 0 1-2.5 2.2H24.2a2.5 2.5 0 0 1-2.5-2.2z') + `<path d="${CUP}"/><path d="M18 20h28"/>`),
+  fanta: can(IC.fanta),
+  sprite: can(IC.sprite),
+  energy: can(IC.energy, `<path class="f" fill="${IC.fries}" d="M34 26l-7 10h5l-3 7 8-10h-5z"/>`),
+  slushy: sv(fl(IC.slushR, 'M18.9 30h26.2l-1 11H19.9z') + fl(IC.slushB, 'M19.9 41h24.2l-1.3 14.3a2.5 2.5 0 0 1-2.5 2.2H24.2a2.5 2.5 0 0 1-2.5-2.2z') +
+    '<path d="M18 22h28l-3.2 33.3a3 3 0 0 1-3 2.7H24.2a3 3 0 0 1-3-2.7z"/><path d="M17 22a15 11 0 0 1 30 0M15 22h34M35 12l3-8h5"/>'),
+  bier: sv(fl(IC.beer, 'M14 26h28v28a3 3 0 0 1-3 3H17a3 3 0 0 1-3-3z') +
+    fl(IC.foam, 'M13 27v-5c0-5 5-8 9-5 2-4 9-5 12-1 4-2 10 1 9 7v4z') +
+    '<path d="M13 24v30a4 4 0 0 0 4 4h22a4 4 0 0 0 4-4V24M43 30h5a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5h-5"/><path d="M13 22c0-5 5-8 9-5 2-4 9-5 12-1 4-2 10 1 9 7"/><path d="M21 34v16M28 34v16M35 34v16" opacity=".45"/>'),
+  radler: sv(fl(IC.radler, 'M21.3 22h21.4l-2.4 32.4a3.5 3.5 0 0 1-3.5 3.1h-9.6a3.5 3.5 0 0 1-3.5-3.1z') +
+    '<path d="M19 12h26l-3 42.6a4 4 0 0 1-4 3.4H26a4 4 0 0 1-4-3.4zM20 20h24"/>' +
+    `<circle class="f" fill="${IC.radler}" cx="46" cy="13" r="7"/><circle cx="46" cy="13" r="7"/><path d="M46 6v14M39 13h14M41 8l10 10M51 8L41 18" stroke-width="1.4"/>`),
+  kaffee: sv(fl(IC.coffee, 'M15 30h28v6H15z') + '<path d="M14 28h30v12a12 12 0 0 1-12 12h-6a12 12 0 0 1-12-12zM44 32h3a5 5 0 0 1 0 10h-4M9 57h40M23 22c-2-3 2-5 0-8M31 22c-2-3 2-5 0-8"/>'),
+  pommes: sv(`<path stroke="${IC.fries}" stroke-width="4.5" d="M22 32l-2-19M27 32l-1-22M32 32V11M37 32l1-23M42 32l2-18"/>` +
+    fl(IC.box, 'M16 28h32l-4 30H20z') + '<path d="M16 28h32l-4 30H20zM16 28c5 5 11 5 16 0 5 5 11 5 16 0"/>'),
+  bratwurst: sv(fl(IC.bun, 'M6 36c0 10 11 16 26 16s26-6 26-16z') +
+    `<g transform="rotate(-5 32 30)"><rect class="f" fill="${IC.sausage}" x="5" y="24" width="54" height="12" rx="6"/><rect x="5" y="24" width="54" height="12" rx="6"/><path stroke="${IC.mustard}" stroke-width="2" d="M12 30l4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3 4-3 4 3"/></g>` +
+    '<path d="M6 36c0 10 11 16 26 16s26-6 26-16"/>'),
+  currybroetchen: trayFood(fl(IC.bun, 'M46 53c-4 0-6-3-6-7 0-7 6-12 12-12s10 5 10 12c0 4-2 7-6 7z') +
+    '<path d="M46 53c-4 0-6-3-6-7 0-7 6-12 12-12s10 5 10 12c0 4-2 7-6 7zM47 42l5-3M50 47l5-3"/><path d="M4 41h34l-4 12H8z"/><path d="M30 31l6-14"/>'),
+  currypommes: trayFood(`<path stroke="${IC.fries}" stroke-width="4" d="M42 41l-2-16M47 41V22M52 41l1-17M57 41l2-13"/>` +
+    '<path d="M4 41h56l-5 13H9z"/><path d="M30 31l6-14"/>'),
+  steak: sv(fl(IC.bun, 'M8 30c0-10 11-16 24-16s24 6 24 16z') + fl(IC.meat, 'M7 31h50a3 3 0 0 1 0 6H7a3 3 0 0 1 0-6z') +
+    fl(IC.bun, 'M9 42h46v4a6 6 0 0 1-6 6H15a6 6 0 0 1-6-6z') +
+    `<path stroke="${IC.salad}" d="M8 39.5c4 3 6-2 10 1s6-2 10 1 6-2 10 1 6-2 10 1 6-2 8 0"/>` +
+    '<path d="M8 30c0-10 11-16 24-16s24 6 24 16zM7 31h50a3 3 0 0 1 0 6H7a3 3 0 0 1 0-6zM9 42h46v4a6 6 0 0 1-6 6H15a6 6 0 0 1-6-6z"/>'),
+  sosse: sv(fl(IC.sauce, 'M17 38h30l-2.4 14.5a3.5 3.5 0 0 1-3.5 3H22.9a3.5 3.5 0 0 1-3.5-3z') + fl(IC.sauce, 'M32 8c5 7 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8 8-15z') +
+    '<path d="M16 34h32l-3 18a4 4 0 0 1-4 3.5H23a4 4 0 0 1-4-3.5zM32 8c5 7 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8 8-15z"/>'),
+  teller: sv(fl(IC.plate, 'M32 18a16 16 0 1 1 0 32 16 16 0 0 1 0-32z') + '<circle cx="32" cy="34" r="16"/><circle cx="32" cy="34" r="10"/><path d="M8 16v10a3 3 0 0 0 6 0V16M11 26v28M56 16c-4 2-5 8-5 14h5v24"/>'),
+  bonbon: sv(fl(IC.pink, 'M20 32a12 9 0 1 0 24 0 12 9 0 1 0-24 0z') + `<path class="f" fill="${IC.pink}" opacity=".6" d="M20 32L9 24v16zM44 32l11-8v16z"/>` +
+    '<ellipse cx="32" cy="32" rx="12" ry="9"/><path d="M20 32L9 24v16zM44 32l11-8v16zM28 24l-3 16M36 24l-3 16"/>'),
+  lolli: sv(fl(IC.pink, 'M32 8a16 16 0 1 1 0 32 16 16 0 0 1 0-32z') +
+    '<circle cx="32" cy="24" r="16"/><path d="M28 24a4 4 0 1 1 8 0 8 8 0 1 1-16 0 12 12 0 1 1 24 0" stroke-width="2"/><path d="M32 40v20"/>'),
+  popcorn: sv(fl('#f4f1ea', 'M17 27h30l-4 31H21z') + fl(IC.box, 'M23 27l1.5 31h5L29 27zM35 27l-.5 31h5L41 27z') +
+    `<g fill="#fff3c4"><circle cx="21" cy="23" r="6"/><circle cx="31" cy="18" r="7"/><circle cx="41" cy="21" r="6"/><circle cx="46" cy="27" r="4"/></g>` +
+    '<path d="M16 27h32l-4 31H20z"/>'),
+  zuckerwatte: sv(`<g class="f" fill="${IC.pink}"><circle cx="24" cy="24" r="10"/><circle cx="36" cy="19" r="11"/><circle cx="42" cy="30" r="9"/><circle cx="29" cy="32" r="9"/></g>` +
+    '<path d="M16 30a10 10 0 0 1 4-15 11 11 0 0 1 21-5 9 9 0 0 1 9 17 9 9 0 0 1-12 10 9 9 0 0 1-12-2 10 10 0 0 1-10-5zM32 40v20"/>'),
+  mandeln: sv(`<g class="f" fill="${IC.almond}"><ellipse cx="22" cy="17" rx="5" ry="3.5" transform="rotate(-20 22 17)"/><ellipse cx="32" cy="13" rx="5" ry="3.5"/><ellipse cx="42" cy="17" rx="5" ry="3.5" transform="rotate(20 42 17)"/><ellipse cx="27" cy="21" rx="4.5" ry="3"/><ellipse cx="37" cy="21" rx="4.5" ry="3"/></g>` +
+    fl(IC.paper, 'M13 22h38L32 60z') + '<path d="M13 22h38L32 60zM20 30h24" />'),
+  schokofrucht: sv('<path d="M32 3v58"/>' +
+    fl(IC.berry, 'M32 10c7 0 10 4 10 8 0 7-6 12-10 15-4-3-10-8-10-15 0-4 3-8 10-8z') + fl(IC.choc, 'M23 22c2 6 6 9 9 11 3-2 7-5 9-11z') +
+    fl(IC.berry, 'M32 36c6 0 9 3 9 7 0 6-5 10-9 13-4-3-9-7-9-13 0-4 3-7 9-7z') + fl(IC.choc, 'M24 47c2 4 5 7 8 9 3-2 6-5 8-9z') +
+    '<path d="M32 10c7 0 10 4 10 8 0 7-6 12-10 15-4-3-10-8-10-15 0-4 3-8 10-8zM32 36c6 0 9 3 9 7 0 6-5 10-9 13-4-3-9-7-9-13 0-4 3-7 9-7z"/>'),
+  fruchtgummi: sv(`<g class="f" fill="${IC.gummy}" opacity=".9"><circle cx="32" cy="18" r="9"/><circle cx="25" cy="11" r="3.5"/><circle cx="39" cy="11" r="3.5"/><ellipse cx="32" cy="41" rx="12" ry="14"/><circle cx="20" cy="33" r="4"/><circle cx="44" cy="33" r="4"/><circle cx="24" cy="54" r="4.5"/><circle cx="40" cy="54" r="4.5"/></g>` +
+    '<circle cx="32" cy="18" r="9"/><circle cx="25" cy="11" r="3.5"/><circle cx="39" cy="11" r="3.5"/><ellipse cx="32" cy="41" rx="12" ry="14"/>'),
+  crepe: sv(fl(IC.crepe, 'M10 20h44L32 58z') + `<path stroke="${IC.choc}" stroke-width="3" d="M16 28c4-3 6 3 10 0s6 3 10 0 6 3 10 0 4 2 6 1"/>` +
+    '<path d="M10 20h44L32 58zM10 20c10 8 34 8 44 0"/>')
+};
+const ICON_NAMES = [
+  ['still','Wasser still'],['medium','Wasser medium'],['sprudel','Wasser sprudel'],['glas','Glas / Getränk'],['cola','Becher (Cola)'],
+  ['fanta','Dose orange'],['sprite','Dose grün'],['energy','Energy-Dose'],['slushy','Slushy'],['bier','Bier'],['radler','Radler'],['kaffee','Kaffee / Kakao'],
+  ['pommes','Pommes'],['bratwurst','Bratwurst'],['currybroetchen','Currywurst + Brötchen'],['currypommes','Currywurst + Pommes'],['steak','Burger / Steak'],
+  ['sosse','Soße'],['teller','Teller (Essen)'],['bonbon','Bonbon'],['lolli','Lolli'],['popcorn','Popcorn'],['zuckerwatte','Zuckerwatte'],
+  ['mandeln','Mandeln / Tüte'],['schokofrucht','Schokofrüchte'],['fruchtgummi','Fruchtgummi'],['crepe','Crêpe']
+];
+function guessIcon(name, cat) {
+  const n = String(name).toLowerCase();
+  const rules = [
+    [/medium/, 'medium'], [/sprudel|spritzig|classic/, 'sprudel'], [/wasser/, 'still'], [/slush/, 'slushy'],
+    [/fanta|orange/, 'fanta'], [/sprite|zitrone|lemon/, 'sprite'], [/energy|red ?bull/, 'energy'], [/cola/, 'cola'],
+    [/radler/, 'radler'], [/bier|pils|bitburger|weizen/, 'bier'], [/kaffee|kakao|tee|cappu/, 'kaffee'],
+    [/curry.*pommes/, 'currypommes'], [/curry/, 'currybroetchen'], [/pommes|fritten/, 'pommes'],
+    [/bratwurst|wurst/, 'bratwurst'], [/steak|burger/, 'steak'], [/soße|sosse|ketchup|mayo/, 'sosse'],
+    [/mandel|nüss|nuss/, 'mandeln'], [/zuckerwatte/, 'zuckerwatte'], [/popcorn/, 'popcorn'], [/schoko|frücht|frucht(?!gummi)/, 'schokofrucht'],
+    [/lolli|lutscher/, 'lolli'], [/gummi|bär/, 'fruchtgummi'], [/cr[eê]pe|waffel/, 'crepe'], [/bonbon|süß/, 'bonbon']
+  ];
+  for (const [re, ic] of rules) if (re.test(n)) return ic;
+  return cat === 'getraenke' ? 'glas' : 'teller';
+}
+const UI = {
+  chart: '<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+  gear: '<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>',
+  camera: '<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  trash: '<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>',
+  up: '<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>',
+  pdf: '<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8zM14 3v5h5M9 13h6M9 17h6"/></svg>',
+  check: '<svg class="ui" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+};
+
 
 /* ================= Speicher ================= */
 const LS = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
   set(k, v) {
     try { localStorage.setItem(k, JSON.stringify(v)); return true; }
-    catch (e) { toast('⚠️ Speichern fehlgeschlagen – Speicher voll?', true); return false; }
+    catch (e) { toast('Speichern fehlgeschlagen. Ist der Speicher voll?', true); return false; }
   }
 };
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
@@ -277,6 +387,11 @@ let products = LS.get('sk_products', null) || makeDefaults();
 if (LS.get('sk_defver', 1) < 2) {
   products = products.filter((p) => p.stand !== 'imbiss').concat(makeDefaults().filter((p) => p.stand === 'imbiss'));
   LS.set('sk_products', products); LS.set('sk_defver', 2);
+}
+// Alte Emoji-Symbole durch eigene Symbole ersetzen
+if (products.some((p) => !p.icon || p.emoji !== undefined)) {
+  products.forEach((p) => { if (!p.icon || !ICONS[p.icon]) p.icon = guessIcon(p.name, p.cat); delete p.emoji; });
+  LS.set('sk_products', products);
 }
 let sales = LS.get('sk_sales', []);
 let settings = Object.assign({ event: 'World of Motorshow' }, LS.get('sk_settings', {}));
@@ -324,10 +439,11 @@ function toast(msg, warn) {
 /* ================= Kasse ================= */
 function renderStands() {
   $('#stands').innerHTML = Object.entries(STANDS).map(([k, s]) =>
-    `<button class="stand-btn ${k === stand ? 'active' : ''}" data-stand="${k}"><span class="e">${s.emoji}</span>${esc(s.name)}</button>`).join('');
+    `<button class="stand-btn ${k === stand ? 'active' : ''}" data-stand="${k}">${esc(s.name)}</button>`).join('');
   document.body.dataset.stand = stand;
 }
-function picHTML(p) { return p.img ? `<img src="${p.img}" alt="">` : `<span class="pic">${esc(p.emoji || '🛒')}</span>`; }
+const iconOf = (p) => ICONS[p.icon] || ICONS[guessIcon(p.name, p.cat)];
+function picHTML(p) { return p.img ? `<img src="${p.img}" alt="">` : `<span class="pic">${iconOf(p)}</span>`; }
 function renderProducts() {
   const list = products.filter((p) => p.stand === stand);
   const cart = carts[stand];
@@ -340,7 +456,7 @@ function renderProducts() {
       return `<button class="tile ${q ? 'has' : ''}" data-id="${p.id}"><span class="badge num">${q}</span>${picHTML(p)}<span class="name">${esc(p.name)}</span><span class="price num">${eur(p.price)}</span></button>`;
     }).join('') + '</div>';
   }
-  $('#products').innerHTML = h || '<div class="empty">Noch keine Produkte für diesen Stand.<br>Lege sie unter ⚙️ an.</div>';
+  $('#products').innerHTML = h || '<div class="empty">Noch keine Produkte für diesen Stand.<br>Lege sie unter „Produkte“ an.</div>';
 }
 function updateTile(id) {
   const el = $('#products').querySelector(`.tile[data-id="${id}"]`); if (!el) return;
@@ -391,7 +507,7 @@ function book() {
   if (!LS.set('sk_sales', sales)) { sales.pop(); return; }
   carts[stand] = {}; givenSel[stand] = null;
   renderProducts(); renderCart();
-  toast('✓ Gebucht: ' + eur(total));
+  toast('Gebucht: ' + eur(total));
 }
 
 $('#stands').addEventListener('click', (e) => {
@@ -451,11 +567,11 @@ function renderReport() {
 
   let h = `<div class="card grand"><div><div class="lbl">Gesamtumsatz${dv === 'all' ? ' (alle Tage)' : ''}</div><div class="big num">${eur(grand)}</div></div>
     <div class="lbl" style="text-align:right;line-height:1.6">` +
-    Object.entries(STANDS).map(([k, s]) => `${s.emoji} ${esc(s.name)}: <b class="num" style="color:var(--text)">${eur(agg[k].total)}</b>`).join('<br>') + `</div></div>`;
+    Object.entries(STANDS).map(([k, s]) => `${esc(s.name)}: <b class="num" style="color:var(--text)">${eur(agg[k].total)}</b>`).join('<br>') + `</div></div>`;
 
   for (const [k, s] of Object.entries(STANDS)) {
     const a = agg[k];
-    h += `<div class="card"><h2><span>${s.emoji} ${esc(s.name)}</span><span class="num">${eur(a.total)}</span></h2>
+    h += `<div class="card"><h2><span>${esc(s.name)}</span><span class="num">${eur(a.total)}</span></h2>
       <div class="meta">${vk(a.count)}${a.count ? ' · Ø ' + eur(Math.round(a.total / a.count)) + ' pro Verkauf' : ''}</div>`;
     if (!a.count) { h += '<div class="meta">Noch nichts verkauft.</div></div>'; continue; }
     h += '<table class="t"><thead><tr><th>Artikel</th><th class="r">Menge</th><th class="r">Preis</th><th class="r">Umsatz</th></tr></thead><tbody>';
@@ -660,20 +776,20 @@ function renderSettings() {
   $('#evName').value = settings.event || '';
   let h = '';
   for (const [k, s] of Object.entries(STANDS)) {
-    h += `<div class="set-sec"><h2>${s.emoji} ${esc(s.name)}</h2>`;
+    h += `<div class="set-sec"><h2>${esc(s.name)}</h2>`;
     for (const [ck, cl] of CATS) {
       const items = products.filter((p) => p.stand === k && p.cat === ck);
-      h += `<h3>${cl}</h3><div class="lbl-row"><span>Foto</span><span>Symbol</span><span>Name</span><span>Preis €</span><span class="opt">Kategorie</span><span></span><span></span></div>`;
+      h += `<h3>${cl}</h3><div class="lbl-row"><span>Bild</span><span>Symbol (ohne Foto)</span><span>Name</span><span>Preis €</span><span class="opt">Kategorie</span><span></span><span></span></div>`;
       h += items.map((p) => `<div class="prow" data-id="${p.id}">
-          <button class="ph" data-act="photo" aria-label="Foto wählen">${p.img ? `<img src="${p.img}" alt=""><span class="rm-img" data-act="rmimg">✕</span>` : '📷'}</button>
-          <input class="emo" data-f="emoji" value="${esc(p.emoji)}" maxlength="8" aria-label="Symbol">
+          <button class="ph" data-act="photo" aria-label="Foto wählen">${p.img ? `<img src="${p.img}" alt=""><span class="rm-img" data-act="rmimg">✕</span>` : iconOf(p) + `<span class="cam">${UI.camera}</span>`}</button>
+          <select data-f="icon" aria-label="Symbol">${ICON_NAMES.map(([v, l]) => `<option value="${v}" ${v === p.icon ? 'selected' : ''}>${l}</option>`).join('')}</select>
           <input data-f="name" value="${esc(p.name)}" aria-label="Name">
           <input data-f="price" class="num" inputmode="decimal" value="${(p.price / 100).toFixed(2).replace('.', ',')}" aria-label="Preis">
           <select data-f="cat" aria-label="Kategorie">${CATS.map(([v, l]) => `<option value="${v}" ${v === p.cat ? 'selected' : ''}>${l}</option>`).join('')}</select>
-          <button class="sq" data-act="up" aria-label="nach oben">▲</button>
-          <button class="sq" data-act="del" aria-label="löschen">🗑</button>
+          <button class="sq" data-act="up" aria-label="nach oben">${UI.up}</button>
+          <button class="sq" data-act="del" aria-label="löschen">${UI.trash}</button>
         </div>`).join('');
-      h += `<button class="btn" data-add="${k}|${ck}" style="margin:4px 0 6px">＋ ${cl.slice(0, -1) === 'Getränk' ? 'Getränk' : 'Produkt'} hinzufügen</button>`;
+      h += `<button class="btn" data-add="${k}|${ck}" style="margin:4px 0 6px">+ ${cl.slice(0, -1) === 'Getränk' ? 'Getränk' : 'Produkt'} hinzufügen</button>`;
     }
     h += '</div>';
   }
@@ -690,7 +806,7 @@ sb.addEventListener('change', (e) => {
     p.price = v; e.target.value = (v / 100).toFixed(2).replace('.', ',');
   } else if (f === 'name') {
     const v = e.target.value.trim(); if (!v) { e.target.value = p.name; return; } p.name = v;
-  } else if (f === 'emoji') { p.emoji = e.target.value.trim(); }
+  } else if (f === 'icon') { p.icon = e.target.value; saveProducts(); renderSettings(); return; }
   else if (f === 'cat') { p.cat = e.target.value; saveProducts(); renderSettings(); return; }
   saveProducts();
 });
@@ -699,7 +815,7 @@ sb.addEventListener('click', async (e) => {
   const add = e.target.closest('[data-add]');
   if (add) {
     const [st, ck] = add.dataset.add.split('|');
-    const np = { id: uid(), stand: st, cat: ck, name: ck === 'getraenke' ? 'Neues Getränk' : 'Neues Produkt', emoji: ck === 'getraenke' ? '🥤' : '🛒', price: 0, img: '' };
+    const np = { id: uid(), stand: st, cat: ck, name: ck === 'getraenke' ? 'Neues Getränk' : 'Neues Produkt', icon: ck === 'getraenke' ? 'glas' : 'teller', price: 0, img: '' };
     products.push(np); saveProducts(); renderSettings();
     const inp = sb.querySelector(`.prow[data-id="${np.id}"] input[data-f="name"]`);
     if (inp) { inp.focus(); inp.select(); }
@@ -764,6 +880,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 
 $('#pdfClose').addEventListener('click', () => { $('#sheetPdf').classList.remove('open'); $('#pdfFrame').src = 'about:blank'; });
 window.StandKasse = { makeReport };
+document.querySelectorAll('[data-ui]').forEach((el) => { el.outerHTML = UI[el.dataset.ui]; });
 renderStands(); renderProducts(); renderCart();
 })();
 </script>
