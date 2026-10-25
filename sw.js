@@ -1,6 +1,7 @@
 // Offline-Cache für die Standkasse.
-// Nach einer Änderung an der App die Versionsnummer erhöhen (v1 -> v2), damit das iPad die neue Version lädt.
-const CACHE = 'standkasse-v4';
+// Mit Internet wird immer die neueste Version geladen und gespeichert,
+// ohne Internet startet die App aus dem Speicher.
+const CACHE = 'standkasse-v5';
 const FILES = [
   './',
   './index.html',
@@ -23,18 +24,20 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// Erst Netz (max. 3 Sekunden), sonst gespeicherte Version
 self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request, { ignoreSearch: true }).then((hit) =>
-      hit ||
-      fetch(e.request)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(e.request, copy));
-          return res;
-        })
-        .catch(() => caches.match('./index.html'))
-    )
-  );
+  if (e.request.method !== 'GET' || !e.request.url.startsWith(self.location.origin)) return;
+  e.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    try {
+      const res = await Promise.race([
+        fetch(e.request, { cache: 'no-store' }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000))
+      ]);
+      if (res && res.ok) cache.put(e.request, res.clone());
+      return res;
+    } catch (err) {
+      return (await cache.match(e.request, { ignoreSearch: true })) || (await cache.match('./index.html')) || Response.error();
+    }
+  })());
 });
