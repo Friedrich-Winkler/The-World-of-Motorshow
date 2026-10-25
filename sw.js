@@ -1,13 +1,13 @@
 // Offline-Cache für die Standkasse.
 // Nach einer Änderung an der App die Versionsnummer erhöhen (v1 -> v2), damit das iPad die neue Version lädt.
-const CACHE = 'standkasse-v2';
+const CACHE = 'standkasse-v3';
 const FILES = [
   './',
   './index.html',
   './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (e) => {
