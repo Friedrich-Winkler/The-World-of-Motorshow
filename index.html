@@ -515,7 +515,7 @@ function renderCart() {
   $('#btnBook').disabled = ids.length === 0;
 
   const g = givenSel[stand];
-  $('#given').innerHTML = [100, 200, 500, 1000, 2000, 5000].map((v) => `<button data-add="${v}">+${v / 100} €</button>`).join('');
+  $('#given').innerHTML = [100, 200, 500, 1000, 2000, 5000].map((v) => `<button data-add="${v}">${v / 100} €</button>`).join('');
   $('#given2').innerHTML = `<button data-given="exact" class="${g === 'exact' ? 'sel' : ''}">Passend</button><button data-given="pad">Betrag tippen</button><button data-given="reset">Korrektur</button>`;
   const ch = $('#change'); ch.classList.remove('bad');
   const paid = typeof g === 'number' ? `<div class="paid"><span>Gegeben</span><b class="num">${eur(g)}</b></div>` : '';
