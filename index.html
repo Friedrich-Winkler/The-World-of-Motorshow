@@ -251,19 +251,20 @@ const CATS = [['getraenke', 'Getränke'], ['produkte', 'Produkte']];
 
 // Beispiel-Produkte – Preise in Cent. In der App unter „Produkte“ änderbar.
 const DEFAULTS = [
-  ['imbiss','getraenke','Stilles Wasser','still',250], ['imbiss','getraenke','Sprudelwasser','sprudel',250],
-  ['imbiss','getraenke','Medium-Wasser','medium',250], ['imbiss','getraenke','Cola','cola',300],
+  ['imbiss','getraenke','Stilles Wasser','still',250], ['imbiss','getraenke','Medium-Wasser','medium',250],
+  ['imbiss','getraenke','Sprudelwasser','sprudel',250],
+  ['imbiss','getraenke','Cola','cola',300], ['imbiss','getraenke','Cola Zero','colazero',300],
   ['imbiss','getraenke','Fanta','fanta',300], ['imbiss','getraenke','Sprite','sprite',300],
-  ['imbiss','getraenke','Slushy','slushy',350], ['imbiss','getraenke','Radler','radler',350],
-  ['imbiss','getraenke','Bitburger','bier',400],
+  ['imbiss','getraenke','Eistee Pfirsich','eistee',300], ['imbiss','getraenke','Capri-Sonne','capri',300],
+  ['imbiss','getraenke','Slushy','slushy',350],
+  ['imbiss','getraenke','Bier','bier',400], ['imbiss','getraenke','Radler','radler',400],
   ['imbiss','produkte','Pommes','pommes',400], ['imbiss','produkte','Bratwurst mit Brötchen','bratwurst',400],
-  ['imbiss','produkte','Currywurst mit Brötchen','currybroetchen',450], ['imbiss','produkte','Currywurst mit Pommes','currypommes',750],
+  ['imbiss','produkte','Currywurst mit Brötchen','currybroetchen',450], ['imbiss','produkte','Currywurst mit Pommes','currypommes',800],
   ['suess','getraenke','Cola','cola',250], ['suess','getraenke','Wasser','still',200],
   ['suess','getraenke','Slush-Eis','slushy',300], ['suess','getraenke','Kakao','kaffee',250],
   ['suess','produkte','Gebrannte Mandeln','mandeln',400], ['suess','produkte','Zuckerwatte','zuckerwatte',300],
   ['suess','produkte','Popcorn','popcorn',300], ['suess','produkte','Schokofrüchte','schokofrucht',350],
-  ['suess','produkte','Lolli','lolli',150], ['suess','produkte','Fruchtgummi','fruchtgummi',250],
-  ['suess','produkte','Crêpe','crepe',400]
+  ['suess','produkte','Lolli','lolli',150], ['suess','produkte','Fruchtgummi','fruchtgummi',250]
 ];
 const makeDefaults = () => DEFAULTS.map(([stand,cat,name,icon,price]) => ({ id: uid(), stand, cat, name, icon, price, img: '' }));
 
@@ -294,6 +295,13 @@ const ICONS = {
   glas: sv(fl(IC.water, 'M19.6 32h24.8l-2.1 23.4a2.5 2.5 0 0 1-2.5 2.2H24.2a2.5 2.5 0 0 1-2.5-2.2z') + `<path d="${CUP}"/><path d="M18 20h28"/>`),
   fanta: can(IC.fanta),
   sprite: can(IC.sprite),
+  colazero: sv(fl('#2a2a2e', 'M19.6 32h24.8l-2.1 23.4a2.5 2.5 0 0 1-2.5 2.2H24.2a2.5 2.5 0 0 1-2.5-2.2z') + fl(IC.cola, 'M20.4 39h23.2l-.5 6H20.9z') +
+    `<path stroke="${IC.slushR}" d="M35 16l4-11h6"/><path d="${CUP}"/><path d="M16 20h32M18.5 20l1.5-4h24l1.5 4"/>`),
+  eistee: sv(fl('#f4a259', 'M21.5 26h21v28a3.5 3.5 0 0 1-3.5 3.5H25a3.5 3.5 0 0 1-3.5-3.5z') +
+    `<path class="f" fill="#7bc96f" d="M33 33c4-4 9-3 10-1-3 4-7 4-10 1z"/><circle class="f" fill="#ffcf9e" cx="30" cy="40" r="6"/>` +
+    `<path d="${BOTTLE}"/><path d="M27 9h10"/><circle cx="30" cy="40" r="6"/>`),
+  capri: sv(fl('#c9ced6', 'M18.5 15h27l-2 42.5h-23z') + fl(IC.fanta, 'M19.3 31h25.4l-.7 14H20z') +
+    '<path d="M18 14h28l-2 44H20zM18 20h28"/><path d="M38 14l5-10" stroke-width="3"/>'),
   energy: can(IC.energy, `<path class="f" fill="${IC.fries}" d="M34 26l-7 10h5l-3 7 8-10h-5z"/>`),
   slushy: sv(fl(IC.slushR, 'M18.9 30h26.2l-1 11H19.9z') + fl(IC.slushB, 'M19.9 41h24.2l-1.3 14.3a2.5 2.5 0 0 1-2.5 2.2H24.2a2.5 2.5 0 0 1-2.5-2.2z') +
     '<path d="M18 22h28l-3.2 33.3a3 3 0 0 1-3 2.7H24.2a3 3 0 0 1-3-2.7z"/><path d="M17 22a15 11 0 0 1 30 0M15 22h34M35 12l3-8h5"/>'),
@@ -342,7 +350,7 @@ const ICONS = {
 };
 const ICON_NAMES = [
   ['still','Wasser still'],['medium','Wasser medium'],['sprudel','Wasser sprudel'],['glas','Glas / Getränk'],['cola','Becher (Cola)'],
-  ['fanta','Dose orange'],['sprite','Dose grün'],['energy','Energy-Dose'],['slushy','Slushy'],['bier','Bier'],['radler','Radler'],['kaffee','Kaffee / Kakao'],
+  ['colazero','Becher (Cola Zero)'],['fanta','Dose orange'],['sprite','Dose grün'],['energy','Energy-Dose'],['eistee','Eistee'],['capri','Trinkpäckchen'],['slushy','Slushy'],['bier','Bier'],['radler','Radler'],['kaffee','Kaffee / Kakao'],
   ['pommes','Pommes'],['bratwurst','Bratwurst'],['currybroetchen','Currywurst + Brötchen'],['currypommes','Currywurst + Pommes'],['steak','Burger / Steak'],
   ['sosse','Soße'],['teller','Teller (Essen)'],['bonbon','Bonbon'],['lolli','Lolli'],['popcorn','Popcorn'],['zuckerwatte','Zuckerwatte'],
   ['mandeln','Mandeln / Tüte'],['schokofrucht','Schokofrüchte'],['fruchtgummi','Fruchtgummi'],['crepe','Crêpe']
@@ -351,7 +359,7 @@ function guessIcon(name, cat) {
   const n = String(name).toLowerCase();
   const rules = [
     [/medium/, 'medium'], [/sprudel|spritzig|classic/, 'sprudel'], [/wasser/, 'still'], [/slush/, 'slushy'],
-    [/fanta|orange/, 'fanta'], [/sprite|zitrone|lemon/, 'sprite'], [/energy|red ?bull/, 'energy'], [/cola/, 'cola'],
+    [/fanta|orange/, 'fanta'], [/sprite|zitrone|lemon/, 'sprite'], [/energy|red ?bull/, 'energy'], [/zero/, 'colazero'], [/cola/, 'cola'], [/eistee|ice ?tea/, 'eistee'], [/capri/, 'capri'],
     [/radler/, 'radler'], [/bier|pils|bitburger|weizen/, 'bier'], [/kaffee|kakao|tee|cappu/, 'kaffee'],
     [/curry.*pommes/, 'currypommes'], [/curry/, 'currybroetchen'], [/pommes|fritten/, 'pommes'],
     [/bratwurst|wurst/, 'bratwurst'], [/steak|burger/, 'steak'], [/soße|sosse|ketchup|mayo/, 'sosse'],
@@ -387,6 +395,11 @@ let products = LS.get('sk_products', null) || makeDefaults();
 if (LS.get('sk_defver', 1) < 2) {
   products = products.filter((p) => p.stand !== 'imbiss').concat(makeDefaults().filter((p) => p.stand === 'imbiss'));
   LS.set('sk_products', products); LS.set('sk_defver', 2);
+}
+// Neue Imbiss-Liste und Preise (Version 3); Crêpe vorerst entfernt
+if (LS.get('sk_defver', 1) < 3) {
+  products = products.filter((p) => p.stand !== 'imbiss' && !(p.stand === 'suess' && /cr[eê]pe/i.test(p.name))).concat(makeDefaults().filter((p) => p.stand === 'imbiss'));
+  LS.set('sk_products', products); LS.set('sk_defver', 3);
 }
 // Alte Emoji-Symbole durch eigene Symbole ersetzen
 if (products.some((p) => !p.icon || p.emoji !== undefined)) {
