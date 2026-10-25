@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Standkasse">
+<meta name="theme-color" content="#121417">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>Standkasse</title>
+<style>
+:root{
+  --bg:#121417;--panel:#1a1d21;--tile:#23272c;--tile2:#2d3238;--line:#343a42;
+  --text:#f3f1ec;--muted:#9aa2ab;--accent:#ffb000;--accent-ink:#1d1400;
+  --ok:#2fd27a;--ok-ink:#03210f;--danger:#ff5a4f;
+}
+body[data-stand="suess"]{--accent:#ff5fa2;--accent-ink:#2b0015}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+input,select,textarea{-webkit-user-select:text;user-select:text;font:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Layout ---------- */
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+main.pos{flex:1}
+header.top{display:flex;align-items:center;gap:10px;
+  padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 14px) 10px calc(env(safe-area-inset-left) + 14px);
+  background:var(--panel);border-bottom:1px solid var(--line)}
+.stands{display:flex;gap:8px;flex:1;min-width:0}
+.stand-btn{flex:1;max-width:280px;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:18px;font-weight:750;padding:12px 10px;border-radius:14px;border:2px solid var(--line);
+  background:var(--tile);white-space:nowrap}
+.stand-btn .e{font-size:22px}
+.stand-btn.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.icon-btn{display:flex;align-items:center;gap:6px;padding:12px 14px;border-radius:14px;border:2px solid var(--line);
+  background:var(--tile);font-size:16px;font-weight:650;white-space:nowrap}
+.icon-btn:active,.stand-btn:active{transform:scale(.97)}
+
+main.pos{display:grid;grid-template-columns:1fr 350px;min-height:0}
+.products{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 14px 40px calc(env(safe-area-inset-left) + 14px)}
+.cat-title{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:16px 4px 10px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:12px}
+.tile{position:relative;min-height:150px;border-radius:18px;background:var(--tile);border:3px solid transparent;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 8px;
+  transition:transform .07s ease}
+.tile:active{transform:scale(.94);background:var(--tile2)}
+.tile.has{border-color:var(--accent);background:var(--tile2)}
+.tile .pic{font-size:58px;line-height:1;height:74px;display:flex;align-items:center;justify-content:center}
+.tile img{width:76px;height:76px;object-fit:cover;border-radius:14px;display:block}
+.tile .name{font-size:16px;font-weight:750;text-align:center;line-height:1.15}
+.tile .price{font-size:15px;color:var(--muted)}
+.badge{position:absolute;top:8px;right:8px;min-width:36px;height:36px;padding:0 9px;border-radius:18px;
+  background:var(--accent);color:var(--accent-ink);font-weight:850;font-size:19px;display:none;align-items:center;justify-content:center}
+.tile.has .badge{display:flex}
+.empty{color:var(--muted);padding:40px 10px;text-align:center;font-size:17px}
+
+/* ---------- Warenkorb ---------- */
+.cart{display:flex;flex-direction:column;min-height:0;background:var(--panel);border-left:1px solid var(--line);
+  padding-right:env(safe-area-inset-right)}
+.cart-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 8px}
+.cart-head h2{margin:0;font-size:17px}
+.link-btn{background:none;border:none;color:var(--muted);font-size:15px;padding:8px}
+.cart-list{flex:1;overflow-y:auto;padding:0 10px}
+.cline{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px;padding:8px 6px;border-bottom:1px solid var(--line)}
+.cline .n{font-weight:650;font-size:16px;line-height:1.2}
+.cline .n small{display:block;color:var(--muted);font-weight:500;font-size:13px}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:40px;height:40px;border-radius:12px;border:none;background:var(--tile2);font-size:22px;font-weight:700}
+.qty span{min-width:26px;text-align:center;font-weight:800;font-size:18px}
+.cline .lt{min-width:70px;text-align:right;font-weight:700}
+.cart-empty{color:var(--muted);text-align:center;padding:40px 10px;font-size:15px;line-height:1.5}
+.cart-foot{padding:12px 16px calc(env(safe-area-inset-bottom) + 14px);border-top:1px solid var(--line)}
+.total{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.total span{color:var(--muted);font-size:15px}
+.total strong{font-size:40px;font-weight:850;letter-spacing:-.02em}
+.given{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
+.given button{padding:11px 0;border-radius:11px;border:2px solid var(--line);background:var(--tile);font-weight:700;font-size:15px}
+.given button.sel{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.change{min-height:26px;text-align:center;font-size:17px;margin-bottom:10px}
+.change b{font-size:22px}
+.change.bad{color:var(--danger)}
+.book{width:100%;padding:18px;border:none;border-radius:16px;background:var(--ok);color:var(--ok-ink);font-size:20px;font-weight:850}
+.book:disabled{opacity:.35}
+.book:active:not(:disabled){transform:scale(.98)}
+
+/* ---------- Seiten (Bilanz, Einstellungen) ---------- */
+.sheet{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:20}
+.sheet.open{display:flex}
+.sheet-head{display:flex;align-items:center;gap:12px;
+  padding:calc(env(safe-area-inset-top) + 10px) calc(env(safe-area-inset-right) + 14px) 10px calc(env(safe-area-inset-left) + 14px);
+  background:var(--panel);border-bottom:1px solid var(--line)}
+.sheet-head h1{margin:0;font-size:20px;flex:1}
+.sheet-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 40px) calc(env(safe-area-inset-left) + 16px)}
+.wrap{max-width:900px;margin:0 auto}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+select.big,input.big{padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--tile);color:var(--text);font-size:16px}
+.btn{padding:12px 16px;border-radius:12px;border:2px solid var(--line);background:var(--tile);font-weight:700;font-size:16px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--danger)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px 18px;margin-bottom:14px}
+.grand{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:flex-end}
+.grand .big{font-size:42px;font-weight:850;letter-spacing:-.02em}
+.grand .lbl{color:var(--muted);font-size:14px}
+.card h2{margin:0 0 6px;font-size:19px;display:flex;justify-content:space-between;gap:10px}
+.meta{color:var(--muted);font-size:14px;margin-bottom:8px}
+table.t{width:100%;border-collapse:collapse;font-size:15px}
+table.t th{text-align:left;color:var(--muted);font-weight:650;font-size:13px;padding:8px 6px;border-bottom:1px solid var(--line)}
+table.t td{padding:9px 6px;border-bottom:1px solid var(--line)}
+table.t .r{text-align:right}
+table.t tr.sub td{color:var(--muted);font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;padding-top:14px}
+table.t tr.sum td{font-weight:800;border-bottom:none}
+.sales li{display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.sales ul{list-style:none;margin:0;padding:0}
+.sales .tm{color:var(--muted);font-size:14px}
+.sales .it{font-size:14px;line-height:1.3}
+.sales .x{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:var(--tile);color:var(--danger);font-size:14px;font-weight:700}
+.pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:8px;margin-right:6px;vertical-align:1px}
+.pill.imbiss{background:#ffb000;color:#1d1400}.pill.suess{background:#ff5fa2;color:#2b0015}
+
+/* Einstellungen */
+.set-sec h2{margin:22px 0 4px;font-size:20px}
+.set-sec h3{margin:14px 0 8px;font-size:13px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+.prow{display:grid;grid-template-columns:56px 58px 1fr 96px 128px 44px 44px;gap:8px;align-items:center;margin-bottom:8px}
+.prow input,.prow select{width:100%;padding:11px 10px;border-radius:11px;border:2px solid var(--line);background:var(--tile);color:var(--text);font-size:16px}
+.prow .emo{text-align:center;font-size:22px;padding:8px 4px}
+.prow .ph{position:relative;width:56px;height:48px;border-radius:11px;border:2px dashed var(--line);background:var(--tile);
+  display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;padding:0}
+.prow .ph img{width:100%;height:100%;object-fit:cover}
+.prow .sq{height:48px;border-radius:11px;border:2px solid var(--line);background:var(--tile);font-size:17px;padding:0}
+.prow .rm-img{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:9px;background:#000a;color:#fff;font-size:11px;line-height:18px}
+.hint{color:var(--muted);font-size:14px;line-height:1.5}
+.lbl-row{display:grid;grid-template-columns:56px 58px 1fr 96px 128px 44px 44px;gap:8px;color:var(--muted);font-size:12px;margin:0 0 4px}
+
+.dlg{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.dlg.open{display:flex}
+.dlg-box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;max-width:440px;width:100%}
+.dlg-box p{margin:0 0 18px;font-size:17px;line-height:1.45;white-space:pre-line}
+.dlg-btns{display:flex;gap:10px;justify-content:flex-end}
+.btn.danger-fill{background:var(--danger);border-color:var(--danger);color:#fff}
+a.btn{text-decoration:none;color:var(--accent-ink)}
+/* Toast + Banner */
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 84px);transform:translateX(-50%) translateY(-20px);
+  background:var(--ok);color:var(--ok-ink);padding:14px 22px;border-radius:14px;font-weight:800;font-size:18px;
+  opacity:0;pointer-events:none;transition:all .2s;z-index:50;box-shadow:0 8px 30px #0008}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.warn{background:var(--danger);color:#fff}
+.install{display:none;align-items:center;gap:10px;padding:10px 16px;background:#2a2410;color:#ffe7a3;font-size:14px;border-bottom:1px solid var(--line)}
+.install.show{display:flex}
+.install b{font-weight:800}
+.install button{margin-left:auto;background:none;border:none;color:#ffe7a3;font-size:20px;padding:4px 8px}
+
+/* Schmale Bildschirme (iPad hochkant geteilt / Handy) */
+@media (max-width:760px){
+  main.pos{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .cart{border-left:none;border-top:1px solid var(--line);max-height:48vh}
+  .stand-btn{font-size:15px;padding:10px 6px}
+  .icon-btn .t{display:none}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:9px}
+  .tile{min-height:124px}.tile .pic{font-size:44px;height:56px}.tile img{width:58px;height:58px}
+  .total strong{font-size:32px}
+  .prow,.lbl-row{grid-template-columns:48px 50px 1fr 80px;}
+  .prow select,.prow .sq,.lbl-row .opt{grid-column:span 1}
+}
+</style>
+</head>
+<body data-stand="imbiss">
+<div class="app">
+  <header class="top">
+    <div class="stands" id="stands"></div>
+    <button class="icon-btn" id="btnReport">📊 <span class="t">Bilanz</span></button>
+    <button class="icon-btn" id="btnSettings" aria-label="Einstellungen">⚙️</button>
+  </header>
+  <div class="install" id="install">📲 <span>Als App nutzen: in Safari auf <b>Teilen</b> tippen → <b>„Zum Home-Bildschirm“</b>.</span><button id="installX" aria-label="Schließen">✕</button></div>
+  <main class="pos">
+    <section class="products" id="products"></section>
+    <aside class="cart">
+      <div class="cart-head"><h2>Bestellung</h2><button class="link-btn" id="btnClear">Leeren</button></div>
+      <div class="cart-list" id="cartList"></div>
+      <div class="cart-foot">
+        <div class="total"><span>Summe</span><strong class="num" id="total">0,00 €</strong></div>
+        <div class="given" id="given"></div>
+        <div class="change num" id="change"></div>
+        <button class="book" id="btnBook" disabled>✓ Verkauf buchen</button>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<!-- Bilanz -->
+<section class="sheet" id="sheetReport">
+  <div class="sheet-head"><button class="icon-btn" data-close>← Kasse</button><h1>Bilanz</h1></div>
+  <div class="sheet-body"><div class="wrap">
+    <div class="toolbar">
+      <select class="big" id="daySel"></select>
+      <button class="btn primary" id="btnPdf">📄 PDF erstellen</button>
+      <span style="flex:1"></span>
+      <button class="btn danger" id="btnReset">Alle Daten löschen</button>
+    </div>
+    <div id="reportBody"></div>
+  </div></div>
+</section>
+
+<!-- Einstellungen -->
+<section class="sheet" id="sheetSettings">
+  <div class="sheet-head"><button class="icon-btn" data-close>← Kasse</button><h1>Produkte &amp; Preise</h1></div>
+  <div class="sheet-body"><div class="wrap">
+    <div class="card">
+      <label class="hint" for="evName">Name der Veranstaltung (steht oben auf dem PDF)</label>
+      <div style="margin-top:8px"><input class="big" id="evName" style="width:100%"></div>
+    </div>
+    <p class="hint">Änderungen werden sofort gespeichert. Tippe auf 📷, um ein eigenes Foto statt des Symbols zu nehmen. Pfand-Rückgabe geht mit negativem Preis (z.&nbsp;B. „-2,00“).</p>
+    <div id="settingsBody"></div>
+    <div style="margin-top:28px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn danger" id="btnDefaults">Beispiel-Produkte wiederherstellen</button>
+    </div>
+  </div></div>
+</section>
+
+<div class="dlg" id="dlg"><div class="dlg-box"><p id="dlgMsg"></p><div class="dlg-btns"><button class="btn" id="dlgNo">Abbrechen</button><button class="btn danger-fill" id="dlgOk">Ja</button></div></div></div>
+<section class="sheet" id="sheetPdf">
+  <div class="sheet-head"><button class="icon-btn" id="pdfClose">← Zurück</button><h1>PDF-Vorschau</h1><a class="btn primary" id="pdfDl" download>Herunterladen</a></div>
+  <p class="hint" style="margin:10px 16px">In der installierten App öffnet sich hier stattdessen das Teilen-Menü (Speichern in Dateien, WhatsApp, Mail).</p>
+  <iframe id="pdfFrame" title="PDF-Vorschau" style="flex:1;border:0;background:#fff;width:100%"></iframe>
+</section>
+<input type="file" id="fileIn" accept="image/*" hidden>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ================= Grunddaten ================= */
+const STANDS = {
+  imbiss: { name: 'Imbiss', emoji: '🌭' },
+  suess:  { name: 'Süßigkeiten', emoji: '🍭' }
+};
+const CATS = [['getraenke', 'Getränke'], ['produkte', 'Produkte']];
+
+// Beispiel-Produkte – Preise in Cent. In der App unter ⚙️ änderbar.
+const DEFAULTS = [
+  ['imbiss','getraenke','Stilles Wasser','💧',250], ['imbiss','getraenke','Sprudelwasser','🫧',250],
+  ['imbiss','getraenke','Medium-Wasser','💦',250], ['imbiss','getraenke','Cola','🥤',300],
+  ['imbiss','getraenke','Fanta','🍊',300], ['imbiss','getraenke','Sprite','🍋',300],
+  ['imbiss','getraenke','Slushy','🧊',350], ['imbiss','getraenke','Radler','🍻',350],
+  ['imbiss','getraenke','Bitburger','🍺',400],
+  ['imbiss','produkte','Pommes','🍟',400], ['imbiss','produkte','Bratwurst mit Brötchen','🌭',400],
+  ['imbiss','produkte','Currywurst mit Brötchen','🥖',450], ['imbiss','produkte','Currywurst mit Pommes','🍛',750],
+  ['suess','getraenke','Cola','🥤',250], ['suess','getraenke','Wasser','💧',200],
+  ['suess','getraenke','Slush-Eis','🧊',300], ['suess','getraenke','Kakao','☕',250],
+  ['suess','produkte','Gebrannte Mandeln','🥜',400], ['suess','produkte','Zuckerwatte','☁️',300],
+  ['suess','produkte','Popcorn','🍿',300], ['suess','produkte','Schokofrüchte','🍓',350],
+  ['suess','produkte','Lolli','🍭',150], ['suess','produkte','Fruchtgummi','🍬',250],
+  ['suess','produkte','Crêpe','🥞',400]
+];
+const makeDefaults = () => DEFAULTS.map(([stand,cat,name,emoji,price]) => ({ id: uid(), stand, cat, name, emoji, price, img: '' }));
+
+/* ================= Speicher ================= */
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) {
+    try { localStorage.setItem(k, JSON.stringify(v)); return true; }
+    catch (e) { toast('⚠️ Speichern fehlgeschlagen – Speicher voll?', true); return false; }
+  }
+};
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+let products = LS.get('sk_products', null) || makeDefaults();
+// Neue Imbiss-Liste (Version 2) auch auf Geräten einspielen, die schon die alte Beispielliste gespeichert haben
+if (LS.get('sk_defver', 1) < 2) {
+  products = products.filter((p) => p.stand !== 'imbiss').concat(makeDefaults().filter((p) => p.stand === 'imbiss'));
+  LS.set('sk_products', products); LS.set('sk_defver', 2);
+}
+let sales = LS.get('sk_sales', []);
+let settings = Object.assign({ event: 'World of Motorshow' }, LS.get('sk_settings', {}));
+let stand = LS.get('sk_stand', 'imbiss'); if (!STANDS[stand]) stand = 'imbiss';
+const carts = { imbiss: {}, suess: {} };
+const givenSel = { imbiss: null, suess: null };
+const saveProducts = () => LS.set('sk_products', products);
+if (!localStorage.getItem('sk_products')) saveProducts();
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+
+/* ================= Hilfen ================= */
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+function eur(c) {
+  const neg = c < 0; c = Math.abs(Math.round(c));
+  const e = Math.floor(c / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return (neg ? '-' : '') + e + ',' + String(c % 100).padStart(2, '0') + ' €';
+}
+const pad = (n) => String(n).padStart(2, '0');
+const dayKey = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const dayLabel = (k) => new Date(k + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+const dayShort = (k) => { const [y, m, d] = k.split('-'); return d + '.' + m + '.' + y; };
+const timeOf = (iso) => { const d = new Date(iso); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const vk = (n) => n + (n === 1 ? ' Verkauf' : ' Verkäufe');
+const byId = (id) => products.find((p) => p.id === id);
+function parsePrice(v) {
+  v = String(v).trim().replace('€', '').replace(/\s/g, '');
+  if (v.includes(',')) v = v.replace(/\./g, '').replace(',', '.');
+  const n = parseFloat(v);
+  return isFinite(n) ? Math.round(n * 100) : null;
+}
+function ask(msg) {
+  return new Promise((res) => {
+    const d = $('#dlg'); $('#dlgMsg').textContent = msg; d.classList.add('open');
+    const done = (v) => { d.classList.remove('open'); $('#dlgOk').onclick = $('#dlgNo').onclick = null; res(v); };
+    $('#dlgOk').onclick = () => done(true); $('#dlgNo').onclick = () => done(false);
+  });
+}
+let toastT;
+function toast(msg, warn) {
+  const t = $('#toast'); t.textContent = msg; t.classList.toggle('warn', !!warn); t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ================= Kasse ================= */
+function renderStands() {
+  $('#stands').innerHTML = Object.entries(STANDS).map(([k, s]) =>
+    `<button class="stand-btn ${k === stand ? 'active' : ''}" data-stand="${k}"><span class="e">${s.emoji}</span>${esc(s.name)}</button>`).join('');
+  document.body.dataset.stand = stand;
+}
+function picHTML(p) { return p.img ? `<img src="${p.img}" alt="">` : `<span class="pic">${esc(p.emoji || '🛒')}</span>`; }
+function renderProducts() {
+  const list = products.filter((p) => p.stand === stand);
+  const cart = carts[stand];
+  let h = '';
+  for (const [ck, cl] of CATS) {
+    const items = list.filter((p) => p.cat === ck);
+    if (!items.length) continue;
+    h += `<div class="cat-title">${cl}</div><div class="grid">` + items.map((p) => {
+      const q = cart[p.id] || 0;
+      return `<button class="tile ${q ? 'has' : ''}" data-id="${p.id}"><span class="badge num">${q}</span>${picHTML(p)}<span class="name">${esc(p.name)}</span><span class="price num">${eur(p.price)}</span></button>`;
+    }).join('') + '</div>';
+  }
+  $('#products').innerHTML = h || '<div class="empty">Noch keine Produkte für diesen Stand.<br>Lege sie unter ⚙️ an.</div>';
+}
+function updateTile(id) {
+  const el = $('#products').querySelector(`.tile[data-id="${id}"]`); if (!el) return;
+  const q = carts[stand][id] || 0;
+  el.classList.toggle('has', q > 0); el.querySelector('.badge').textContent = q;
+}
+function cartTotal(st) {
+  const c = carts[st]; let t = 0;
+  for (const id in c) { const p = byId(id); if (p) t += p.price * c[id]; }
+  return t;
+}
+function renderCart() {
+  const cart = carts[stand];
+  const ids = Object.keys(cart).filter((id) => cart[id] > 0 && byId(id));
+  $('#cartList').innerHTML = ids.length ? ids.map((id) => {
+    const p = byId(id), q = cart[id];
+    return `<div class="cline"><div class="n">${esc(p.name)}<small class="num">${eur(p.price)}</small></div>
+      <div class="qty"><button data-act="dec" data-id="${id}" aria-label="weniger">−</button><span class="num">${q}</span><button data-act="inc" data-id="${id}" aria-label="mehr">+</button></div>
+      <div class="lt num">${eur(p.price * q)}</div></div>`;
+  }).join('') : '<div class="cart-empty">Tippe links auf die Produkte.<br>Jeder Tipp = 1 Stück.</div>';
+
+  const total = cartTotal(stand);
+  $('#total').textContent = eur(total);
+  $('#btnBook').disabled = ids.length === 0;
+
+  const g = givenSel[stand];
+  const opts = [['exact', 'Passend'], [500, '5 €'], [1000, '10 €'], [2000, '20 €'], [5000, '50 €']];
+  $('#given').innerHTML = opts.map(([v, l]) => `<button data-given="${v}" class="${String(g) === String(v) ? 'sel' : ''}">${l}</button>`).join('');
+  const ch = $('#change'); ch.classList.remove('bad');
+  if (g === null || !ids.length) ch.innerHTML = ids.length ? '<span style="color:var(--muted);font-size:14px">Gegeben? Antippen für Rückgeld</span>' : '';
+  else if (g === 'exact') ch.innerHTML = 'Passend bezahlt';
+  else if (g >= total) ch.innerHTML = `Rückgeld: <b>${eur(g - total)}</b>`;
+  else { ch.classList.add('bad'); ch.innerHTML = `Es fehlen noch <b>${eur(total - g)}</b>`; }
+}
+function setQty(id, q) {
+  const c = carts[stand];
+  if (q <= 0) delete c[id]; else c[id] = q;
+  updateTile(id); renderCart();
+}
+function book() {
+  const cart = carts[stand];
+  const ids = Object.keys(cart).filter((id) => cart[id] > 0 && byId(id));
+  if (!ids.length) return;
+  const items = ids.map((id) => { const p = byId(id); return { pid: id, name: p.name, price: p.price, qty: cart[id], cat: p.cat }; });
+  const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+  const now = new Date();
+  sales.push({ id: uid(), ts: now.toISOString(), day: dayKey(now), stand, items, total });
+  if (!LS.set('sk_sales', sales)) { sales.pop(); return; }
+  carts[stand] = {}; givenSel[stand] = null;
+  renderProducts(); renderCart();
+  toast('✓ Gebucht: ' + eur(total));
+}
+
+$('#stands').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-stand]'); if (!b) return;
+  stand = b.dataset.stand; LS.set('sk_stand', stand);
+  renderStands(); renderProducts(); renderCart();
+});
+$('#products').addEventListener('click', (e) => {
+  const t = e.target.closest('.tile'); if (!t) return;
+  setQty(t.dataset.id, (carts[stand][t.dataset.id] || 0) + 1);
+});
+$('#cartList').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const id = b.dataset.id, q = carts[stand][id] || 0;
+  setQty(id, b.dataset.act === 'inc' ? q + 1 : q - 1);
+});
+$('#given').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-given]'); if (!b) return;
+  const v = b.dataset.given === 'exact' ? 'exact' : Number(b.dataset.given);
+  givenSel[stand] = String(givenSel[stand]) === String(v) ? null : v;
+  renderCart();
+});
+$('#btnClear').addEventListener('click', () => {
+  carts[stand] = {}; givenSel[stand] = null; renderProducts(); renderCart();
+});
+$('#btnBook').addEventListener('click', book);
+
+/* ================= Bilanz ================= */
+function filterSales(dv) { return dv === 'all' ? sales : sales.filter((s) => s.day === dv); }
+function aggregate(list) {
+  const res = {};
+  for (const k in STANDS) res[k] = { count: 0, total: 0, rows: {} };
+  for (const s of list) {
+    const a = res[s.stand]; if (!a) continue;
+    a.count++; a.total += s.total;
+    for (const i of s.items) {
+      const key = (i.cat || 'produkte') + '|' + i.name + '|' + i.price;
+      const r = a.rows[key] || (a.rows[key] = { cat: i.cat || 'produkte', name: i.name, price: i.price, qty: 0, sum: 0 });
+      r.qty += i.qty; r.sum += i.qty * i.price;
+    }
+  }
+  return res;
+}
+function rowsByCat(a, ck) { return Object.values(a.rows).filter((r) => r.cat === ck).sort((x, y) => y.qty - x.qty || x.name.localeCompare(y.name)); }
+function daysList() { return [...new Set(sales.map((s) => s.day))].sort().reverse(); }
+
+function renderReport() {
+  const sel = $('#daySel');
+  const days = daysList(), today = dayKey(new Date());
+  if (!days.includes(today)) days.unshift(today);
+  const prev = sel.value;
+  sel.innerHTML = days.map((d) => `<option value="${d}">${d === today ? 'Heute – ' : ''}${esc(dayLabel(d))}</option>`).join('') +
+    `<option value="all">Alle Tage zusammen</option>`;
+  sel.value = (prev && [...sel.options].some((o) => o.value === prev)) ? prev : today;
+  const dv = sel.value, list = filterSales(dv), agg = aggregate(list);
+  const grand = list.reduce((s, x) => s + x.total, 0);
+
+  let h = `<div class="card grand"><div><div class="lbl">Gesamtumsatz${dv === 'all' ? ' (alle Tage)' : ''}</div><div class="big num">${eur(grand)}</div></div>
+    <div class="lbl" style="text-align:right;line-height:1.6">` +
+    Object.entries(STANDS).map(([k, s]) => `${s.emoji} ${esc(s.name)}: <b class="num" style="color:var(--text)">${eur(agg[k].total)}</b>`).join('<br>') + `</div></div>`;
+
+  for (const [k, s] of Object.entries(STANDS)) {
+    const a = agg[k];
+    h += `<div class="card"><h2><span>${s.emoji} ${esc(s.name)}</span><span class="num">${eur(a.total)}</span></h2>
+      <div class="meta">${vk(a.count)}${a.count ? ' · Ø ' + eur(Math.round(a.total / a.count)) + ' pro Verkauf' : ''}</div>`;
+    if (!a.count) { h += '<div class="meta">Noch nichts verkauft.</div></div>'; continue; }
+    h += '<table class="t"><thead><tr><th>Artikel</th><th class="r">Menge</th><th class="r">Preis</th><th class="r">Umsatz</th></tr></thead><tbody>';
+    for (const [ck, cl] of CATS) {
+      const rows = rowsByCat(a, ck); if (!rows.length) continue;
+      const sub = rows.reduce((s2, r) => s2 + r.sum, 0);
+      h += `<tr class="sub"><td colspan="3">${cl}</td><td class="r num">${eur(sub)}</td></tr>`;
+      h += rows.map((r) => `<tr><td>${esc(r.name)}</td><td class="r num">${r.qty}×</td><td class="r num">${eur(r.price)}</td><td class="r num">${eur(r.sum)}</td></tr>`).join('');
+    }
+    h += `<tr class="sum"><td colspan="3">Summe ${esc(s.name)}</td><td class="r num">${eur(a.total)}</td></tr></tbody></table></div>`;
+  }
+
+  const recent = list.slice().sort((x, y) => y.ts.localeCompare(x.ts)).slice(0, 30);
+  h += `<div class="card sales"><h2><span>Letzte Verkäufe</span></h2><div class="meta">Falsch gebucht? Mit „Storno“ wird der Verkauf wieder entfernt.</div>`;
+  h += recent.length ? '<ul>' + recent.map((s) => `<li><span class="tm num">${dv === 'all' ? dayShort(s.day) + ' ' : ''}${timeOf(s.ts)}</span>
+      <span class="it"><span class="pill ${s.stand}">${esc(STANDS[s.stand] ? STANDS[s.stand].name : s.stand)}</span>${esc(s.items.map((i) => i.qty + '× ' + i.name).join(', '))}</span>
+      <b class="num">${eur(s.total)}</b><button class="x" data-storno="${s.id}">Storno</button></li>`).join('') + '</ul>'
+    : '<div class="meta">Keine Verkäufe.</div>';
+  h += '</div>';
+  $('#reportBody').innerHTML = h;
+}
+$('#daySel').addEventListener('change', renderReport);
+$('#reportBody').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-storno]'); if (!b) return;
+  const s = sales.find((x) => x.id === b.dataset.storno); if (!s) return;
+  if (!(await ask(`Diesen Verkauf stornieren?\n\n${timeOf(s.ts)} Uhr – ${eur(s.total)}\n${s.items.map((i) => i.qty + '× ' + i.name).join(', ')}`))) return;
+  sales = sales.filter((x) => x.id !== s.id); LS.set('sk_sales', sales);
+  renderReport(); toast('Verkauf storniert');
+});
+$('#btnReset').addEventListener('click', async () => {
+  if (!sales.length) { toast('Keine Daten vorhanden'); return; }
+  if (!(await ask('Wirklich ALLE Verkäufe aller Tage löschen?\n\nTipp: Vorher ein PDF mit „Alle Tage zusammen“ erstellen.'))) return;
+  if (!(await ask('Letzte Sicherheitsfrage: Alle Verkaufsdaten endgültig löschen?'))) return;
+  sales = []; LS.set('sk_sales', sales); renderReport(); toast('Alle Verkäufe gelöscht');
+});
+$('#btnPdf').addEventListener('click', async () => {
+  const dv = $('#daySel').value;
+  const bytes = makeReport(dv);
+  const ev = (settings.event || 'Standkasse').replace(/[^A-Za-z0-9ÄÖÜäöüß_-]+/g, '_').replace(/^_+|_+$/g, '');
+  await shareFile(bytes, `Abrechnung_${ev}_${dv === 'all' ? 'Gesamt' : dayShort(dv).replace(/\./g, '-')}.pdf`);
+});
+
+/* ================= PDF (ohne Internet, ohne Zusatz-Bibliothek) ================= */
+const WIN = { 0x20AC:0x80,0x201A:0x82,0x201E:0x84,0x2026:0x85,0x2022:0x95,0x2013:0x96,0x2014:0x97,0x2018:0x91,0x2019:0x92,0x201C:0x93,0x201D:0x94,0x00D7:0xD7 };
+function pdfStr(str) {
+  let o = '';
+  for (const ch of String(str)) {
+    const c = ch.codePointAt(0);
+    let b = WIN[c] !== undefined ? WIN[c] : (c < 256 ? c : (c === 0x2212 ? 0x2D : -1));
+    if (b < 0 || (b < 32 && b !== 9)) continue;
+    const s = String.fromCharCode(b);
+    o += (s === '(' || s === ')' || s === '\\') ? '\\' + s : s;
+  }
+  return o.replace(/\s+$/, '');
+}
+// Breiten (Helvetica, 1/1000) – reicht für rechtsbündige Zahlen
+function tw(str, size) {
+  let w = 0;
+  for (const ch of String(str)) {
+    if (/[0-9€]/.test(ch)) w += 556;
+    else if (ch === ',' || ch === '.' || ch === ' ' || ch === ' ') w += 278;
+    else if (ch === '-') w += 333;
+    else if (ch === '×' || ch === 'x') w += 584;
+    else w += 620;
+  }
+  return w * size / 1000;
+}
+class PdfDoc {
+  constructor(head) { this.pages = []; this.head = head; this.c = ''; this.y = 800; }
+  newPage() { this.pages.push(this.c); this.c = ''; this.y = 800;
+    this.text(50, 812, this.head, 8, false, '0.5 0.5 0.5'); this.y = 790; }
+  ensure(h) { if (this.y - h < 60) this.newPage(); }
+  text(x, y, s, size = 10, bold = false, col = '0 0 0') { this.c += `BT /${bold ? 'F2' : 'F1'} ${size} Tf ${col} rg ${x.toFixed(2)} ${y.toFixed(2)} Td (${pdfStr(s)}) Tj ET\n`; }
+  rtext(xr, y, s, size = 10, bold = false, col) { this.text(xr - tw(s, size), y, s, size, bold, col); }
+  line(x1, y, x2, gray = 0.8, w = 0.5) { this.c += `${gray} G ${w} w ${x1} ${y.toFixed(2)} m ${x2} ${y.toFixed(2)} l S\n`; }
+  rect(x, y, w, h, gray) { this.c += `${gray} g ${x} ${y.toFixed(2)} ${w} ${h} re f\n`; }
+  bytes(footer) {
+    this.pages.push(this.c);
+    const n = this.pages.length;
+    const pages = this.pages.map((c, i) =>
+      c + `BT /F1 8 Tf 0.5 0.5 0.5 rg 50 30 Td (${pdfStr(footer)}) Tj ET\n` +
+      `BT /F1 8 Tf 0.5 0.5 0.5 rg ${(545 - tw('Seite ' + (i + 1) + ' von ' + n, 8)).toFixed(2)} 30 Td (${pdfStr('Seite ' + (i + 1) + ' von ' + n)}) Tj ET\n`);
+    const objs = [];
+    objs[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+    objs[2] = `<< /Type /Pages /Kids [${pages.map((_, i) => (5 + i * 2) + ' 0 R').join(' ')}] /Count ${n} >>`;
+    objs[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+    objs[4] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+    pages.forEach((c, i) => {
+      const p = 5 + i * 2;
+      objs[p] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${p + 1} 0 R >>`;
+      objs[p + 1] = `<< /Length ${c.length} >>\nstream\n${c}\nendstream`;
+    });
+    let out = '%PDF-1.4\n%âãÏÓ\n'; const offs = [];
+    for (let i = 1; i < objs.length; i++) { offs[i] = out.length; out += `${i} 0 obj\n${objs[i]}\nendobj\n`; }
+    const xref = out.length;
+    out += `xref\n0 ${objs.length}\n0000000000 65535 f \n`;
+    for (let i = 1; i < objs.length; i++) out += String(offs[i]).padStart(10, '0') + ' 00000 n \n';
+    out += `trailer\n<< /Size ${objs.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+    const b = new Uint8Array(out.length);
+    for (let i = 0; i < out.length; i++) b[i] = out.charCodeAt(i) & 255;
+    return b;
+  }
+}
+function makeReport(dv) {
+  const list = filterSales(dv), agg = aggregate(list);
+  const grand = list.reduce((s, x) => s + x.total, 0);
+  const ev = settings.event || 'Standkasse';
+  const now = new Date();
+  const period = dv === 'all'
+    ? (list.length ? 'Alle Tage (' + dayShort(list.reduce((m, s) => s.day < m ? s.day : m, list[0].day)) + ' – ' + dayShort(list.reduce((m, s) => s.day > m ? s.day : m, list[0].day)) + ')' : 'Alle Tage')
+    : dayLabel(dv);
+  const D = new PdfDoc(ev + ' – Abrechnung ' + period);
+  const L = 50, R = 545, cQ = 365, cP = 455;
+  const GRAY = '0.4 0.4 0.4';
+
+  D.text(L, D.y, ev, 22, true); D.y -= 24;
+  D.text(L, D.y, dv === 'all' ? 'Gesamtabrechnung' : 'Tagesabrechnung', 13, false, GRAY); D.y -= 22;
+  D.text(L, D.y, 'Zeitraum: ' + period, 10); D.y -= 14;
+  D.text(L, D.y, 'Erstellt: ' + dayShort(dayKey(now)) + ', ' + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ' Uhr', 10); D.y -= 22;
+
+  // Übersicht
+  const boxH = 70;
+  D.rect(L, D.y - boxH, R - L, boxH, 0.94);
+  D.text(L + 14, D.y - 20, 'Gesamtumsatz', 10, false, GRAY);
+  D.text(L + 14, D.y - 52, eur(grand), 26, true);
+  let yy = D.y - 20;
+  for (const [k, s] of Object.entries(STANDS)) {
+    const t = s.name + ':  ' + eur(agg[k].total);
+    D.rtext(R - 14, yy, eur(agg[k].total), 11, true);
+    D.text(R - 14 - tw(eur(agg[k].total), 11) - 110, yy, s.name, 11);
+    D.rtext(R - 14, yy - 13, vk(agg[k].count), 8, false, GRAY);
+    yy -= 30;
+  }
+  D.y -= boxH + 28;
+
+  if (!list.length) { D.text(L, D.y, 'Im gewählten Zeitraum wurden keine Verkäufe gebucht.', 11); }
+
+  for (const [k, s] of Object.entries(STANDS)) {
+    const a = agg[k]; if (!a.count) continue;
+    D.ensure(90);
+    D.text(L, D.y, s.name, 15, true); D.rtext(R, D.y, eur(a.total), 15, true); D.y -= 8;
+    D.line(L, D.y, R, 0, 1); D.y -= 16;
+    D.text(L, D.y, 'Artikel', 9, true, GRAY); D.rtext(cQ, D.y, 'Menge', 9, true, GRAY);
+    D.rtext(cP, D.y, 'Einzelpreis', 9, true, GRAY); D.rtext(R, D.y, 'Umsatz', 9, true, GRAY); D.y -= 7;
+    D.line(L, D.y, R, 0.7); D.y -= 15;
+    for (const [ck, cl] of CATS) {
+      const rows = rowsByCat(a, ck); if (!rows.length) continue;
+      const sub = rows.reduce((s2, r) => s2 + r.sum, 0);
+      D.ensure(36);
+      D.text(L, D.y, cl.toUpperCase(), 8, true, GRAY); D.y -= 15;
+      for (const r of rows) {
+        D.ensure(20);
+        D.text(L + 8, D.y, r.name, 10); D.rtext(cQ, D.y, String(r.qty), 10);
+        D.rtext(cP, D.y, eur(r.price), 10); D.rtext(R, D.y, eur(r.sum), 10); D.y -= 6;
+        D.line(L, D.y, R, 0.88); D.y -= 13;
+      }
+      D.text(L + 8, D.y, 'Zwischensumme ' + cl, 9, false, GRAY); D.rtext(R, D.y, eur(sub), 9, true, GRAY); D.y -= 20;
+    }
+    D.ensure(40);
+    D.line(L, D.y + 8, R, 0, 0.8);
+    D.text(L, D.y - 6, 'Summe ' + s.name, 11, true); D.rtext(R, D.y - 6, eur(a.total), 11, true); D.y -= 22;
+    D.text(L, D.y, vk(a.count) + '  ·  Durchschnitt ' + eur(Math.round(a.total / a.count)) + ' pro Verkauf', 9, false, GRAY);
+    D.y -= 34;
+  }
+
+  // Bei "Alle Tage": Umsatz je Tag
+  const days = [...new Set(list.map((s) => s.day))].sort();
+  if (dv === 'all' && days.length > 1) {
+    D.ensure(60 + days.length * 19);
+    D.text(L, D.y, 'Umsatz je Tag', 15, true); D.y -= 8; D.line(L, D.y, R, 0, 1); D.y -= 16;
+    const cols = [[300, 'Imbiss', 'imbiss'], [420, 'Süßigkeiten', 'suess']];
+    D.text(L, D.y, 'Tag', 9, true, GRAY);
+    for (const [x, l] of cols) D.rtext(x, D.y, l, 9, true, GRAY);
+    D.rtext(R, D.y, 'Gesamt', 9, true, GRAY); D.y -= 7; D.line(L, D.y, R, 0.7); D.y -= 15;
+    for (const d of days) {
+      D.ensure(20);
+      const ds = list.filter((s) => s.day === d);
+      D.text(L, D.y, dayLabel(d), 10);
+      for (const [x, , k] of cols) D.rtext(x, D.y, eur(ds.filter((s) => s.stand === k).reduce((t, s) => t + s.total, 0)), 10);
+      D.rtext(R, D.y, eur(ds.reduce((t, s) => t + s.total, 0)), 10, true); D.y -= 6;
+      D.line(L, D.y, R, 0.88); D.y -= 13;
+    }
+  }
+  return D.bytes(ev + ' · Standkasse');
+}
+async function shareFile(bytes, name) {
+  const blob = new Blob([bytes], { type: 'application/pdf' });
+  try {
+    const file = new File([blob], name, { type: 'application/pdf' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: name });
+      return;
+    }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  const url = URL.createObjectURL(blob);
+  $('#pdfFrame').src = url; $('#pdfDl').href = url; $('#pdfDl').download = name;
+  $('#sheetPdf').classList.add('open');
+}
+
+/* ================= Einstellungen ================= */
+function renderSettings() {
+  $('#evName').value = settings.event || '';
+  let h = '';
+  for (const [k, s] of Object.entries(STANDS)) {
+    h += `<div class="set-sec"><h2>${s.emoji} ${esc(s.name)}</h2>`;
+    for (const [ck, cl] of CATS) {
+      const items = products.filter((p) => p.stand === k && p.cat === ck);
+      h += `<h3>${cl}</h3><div class="lbl-row"><span>Foto</span><span>Symbol</span><span>Name</span><span>Preis €</span><span class="opt">Kategorie</span><span></span><span></span></div>`;
+      h += items.map((p) => `<div class="prow" data-id="${p.id}">
+          <button class="ph" data-act="photo" aria-label="Foto wählen">${p.img ? `<img src="${p.img}" alt=""><span class="rm-img" data-act="rmimg">✕</span>` : '📷'}</button>
+          <input class="emo" data-f="emoji" value="${esc(p.emoji)}" maxlength="8" aria-label="Symbol">
+          <input data-f="name" value="${esc(p.name)}" aria-label="Name">
+          <input data-f="price" class="num" inputmode="decimal" value="${(p.price / 100).toFixed(2).replace('.', ',')}" aria-label="Preis">
+          <select data-f="cat" aria-label="Kategorie">${CATS.map(([v, l]) => `<option value="${v}" ${v === p.cat ? 'selected' : ''}>${l}</option>`).join('')}</select>
+          <button class="sq" data-act="up" aria-label="nach oben">▲</button>
+          <button class="sq" data-act="del" aria-label="löschen">🗑</button>
+        </div>`).join('');
+      h += `<button class="btn" data-add="${k}|${ck}" style="margin:4px 0 6px">＋ ${cl.slice(0, -1) === 'Getränk' ? 'Getränk' : 'Produkt'} hinzufügen</button>`;
+    }
+    h += '</div>';
+  }
+  $('#settingsBody').innerHTML = h;
+}
+$('#evName').addEventListener('input', (e) => { settings.event = e.target.value; LS.set('sk_settings', settings); });
+const sb = $('#settingsBody');
+sb.addEventListener('change', (e) => {
+  const row = e.target.closest('.prow'); const f = e.target.dataset.f; if (!row || !f) return;
+  const p = byId(row.dataset.id); if (!p) return;
+  if (f === 'price') {
+    const v = parsePrice(e.target.value);
+    if (v === null) { toast('Preis bitte als Zahl, z. B. 2,50', true); e.target.value = (p.price / 100).toFixed(2).replace('.', ','); return; }
+    p.price = v; e.target.value = (v / 100).toFixed(2).replace('.', ',');
+  } else if (f === 'name') {
+    const v = e.target.value.trim(); if (!v) { e.target.value = p.name; return; } p.name = v;
+  } else if (f === 'emoji') { p.emoji = e.target.value.trim(); }
+  else if (f === 'cat') { p.cat = e.target.value; saveProducts(); renderSettings(); return; }
+  saveProducts();
+});
+let photoFor = null;
+sb.addEventListener('click', async (e) => {
+  const add = e.target.closest('[data-add]');
+  if (add) {
+    const [st, ck] = add.dataset.add.split('|');
+    const np = { id: uid(), stand: st, cat: ck, name: ck === 'getraenke' ? 'Neues Getränk' : 'Neues Produkt', emoji: ck === 'getraenke' ? '🥤' : '🛒', price: 0, img: '' };
+    products.push(np); saveProducts(); renderSettings();
+    const inp = sb.querySelector(`.prow[data-id="${np.id}"] input[data-f="name"]`);
+    if (inp) { inp.focus(); inp.select(); }
+    return;
+  }
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const row = b.closest('.prow'); const p = row && byId(row.dataset.id); if (!p) return;
+  const act = e.target.closest('[data-act="rmimg"]') ? 'rmimg' : b.dataset.act;
+  if (act === 'rmimg') { e.stopPropagation(); p.img = ''; saveProducts(); renderSettings(); }
+  else if (act === 'photo') { photoFor = p.id; $('#fileIn').value = ''; $('#fileIn').click(); }
+  else if (act === 'del') {
+    if (!(await ask(`„${p.name}“ löschen?\n(Bereits gebuchte Verkäufe bleiben in der Bilanz.)`))) return;
+    products = products.filter((x) => x.id !== p.id);
+    for (const k in carts) delete carts[k][p.id];
+    saveProducts(); renderSettings();
+  } else if (act === 'up') {
+    const i = products.indexOf(p);
+    for (let j = i - 1; j >= 0; j--) {
+      if (products[j].stand === p.stand && products[j].cat === p.cat) { [products[j], products[i]] = [products[i], products[j]]; break; }
+    }
+    saveProducts(); renderSettings();
+  }
+});
+$('#fileIn').addEventListener('change', (e) => {
+  const f = e.target.files && e.target.files[0]; const p = byId(photoFor); if (!f || !p) return;
+  const url = URL.createObjectURL(f); const im = new Image();
+  im.onload = () => {
+    const S = 240, cv = document.createElement('canvas'); cv.width = cv.height = S;
+    const m = Math.min(im.width, im.height);
+    cv.getContext('2d').drawImage(im, (im.width - m) / 2, (im.height - m) / 2, m, m, 0, 0, S, S);
+    URL.revokeObjectURL(url);
+    const old = p.img; p.img = cv.toDataURL('image/jpeg', 0.8);
+    if (!saveProducts()) p.img = old;
+    renderSettings();
+  };
+  im.onerror = () => { URL.revokeObjectURL(url); toast('Bild konnte nicht gelesen werden', true); };
+  im.src = url;
+});
+$('#btnDefaults').addEventListener('click', async () => {
+  if (!(await ask('Alle Produkte durch die Beispiel-Produkte ersetzen?\nEigene Produkte und Preise gehen verloren. Verkäufe bleiben erhalten.'))) return;
+  products = makeDefaults(); for (const k in carts) carts[k] = {}; saveProducts(); renderSettings();
+});
+
+/* ================= Navigation ================= */
+function openSheet(id) { $(id).classList.add('open'); }
+$('#btnReport').addEventListener('click', () => { renderReport(); openSheet('#sheetReport'); });
+$('#btnSettings').addEventListener('click', () => { renderSettings(); openSheet('#sheetSettings'); });
+document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => {
+  document.activeElement && document.activeElement.blur();
+  b.closest('.sheet').classList.remove('open');
+  renderProducts(); renderCart();
+}));
+
+/* Hinweis "Zum Home-Bildschirm", nur im normalen Safari-Tab */
+const standalone = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+if (!standalone && !LS.get('sk_hideInstall', false)) $('#install').classList.add('show');
+$('#installX').addEventListener('click', () => { $('#install').classList.remove('show'); LS.set('sk_hideInstall', true); });
+
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+
+$('#pdfClose').addEventListener('click', () => { $('#sheetPdf').classList.remove('open'); $('#pdfFrame').src = 'about:blank'; });
+window.StandKasse = { makeReport };
+renderStands(); renderProducts(); renderCart();
+})();
+</script>
+</body>
+</html>
