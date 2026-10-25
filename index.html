@@ -82,9 +82,21 @@ main.pos{display:grid;grid-template-columns:1fr 350px;min-height:0}
 .total{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
 .total span{color:var(--muted);font-size:15px}
 .total strong{font-size:40px;font-weight:850;letter-spacing:-.02em}
-.given{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
-.given button{padding:11px 0;border-radius:11px;border:2px solid var(--line);background:var(--tile);font-weight:700;font-size:15px}
-.given button.sel{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.given{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:6px}
+.given2{display:grid;grid-template-columns:1fr 1.4fr 1fr;gap:6px;margin-bottom:8px}
+.given button,.given2 button{padding:11px 0;border-radius:11px;border:2px solid var(--line);background:var(--tile);font-weight:700;font-size:15px}
+.given button:active,.given2 button:active{transform:scale(.95)}
+.given2 button.sel{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.paid{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:2px}
+.paid b{color:var(--text)}
+.pad-box{max-width:360px}
+.pad-lbl{color:var(--muted);font-size:14px}
+.pad-val{font-size:40px;font-weight:850;margin:2px 0 4px}
+.pad-hint{min-height:22px;font-size:16px;margin-bottom:12px}
+.pad-hint.bad{color:var(--danger)}
+.pad-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.pad-keys button{padding:16px 0;border-radius:14px;border:none;background:var(--tile2);font-size:24px;font-weight:700}
+.pad-keys button:active{transform:scale(.95)}
 .change{min-height:26px;text-align:center;font-size:17px;margin-bottom:10px}
 .change b{font-size:22px}
 .change.bad{color:var(--danger)}
@@ -192,6 +204,7 @@ a.btn{text-decoration:none;color:var(--accent-ink)}
       <div class="cart-foot">
         <div class="total"><span>Summe</span><strong class="num" id="total">0,00 €</strong></div>
         <div class="given" id="given"></div>
+        <div class="given2" id="given2"></div>
         <div class="change num" id="change"></div>
         <button class="book" id="btnBook" disabled>Verkauf buchen</button>
       </div>
@@ -235,6 +248,12 @@ a.btn{text-decoration:none;color:var(--accent-ink)}
   <p class="hint" style="margin:10px 16px">In der installierten App öffnet sich hier stattdessen das Teilen-Menü (Speichern in Dateien, WhatsApp, Mail).</p>
   <iframe id="pdfFrame" title="PDF-Vorschau" style="flex:1;border:0;background:#fff;width:100%"></iframe>
 </section>
+<div class="dlg" id="pad"><div class="dlg-box pad-box">
+  <div class="pad-lbl">Kunde gibt</div><div class="pad-val num" id="padVal">0 €</div>
+  <div class="pad-hint num" id="padHint"></div>
+  <div class="pad-keys" id="padKeys"><button>1</button><button>2</button><button>3</button><button>4</button><button>5</button><button>6</button><button>7</button><button>8</button><button>9</button><button>,</button><button>0</button><button data-k="del" aria-label="löschen">⌫</button></div>
+  <div class="dlg-btns"><button class="btn" id="padNo">Abbrechen</button><button class="btn primary" id="padOk">Übernehmen</button></div>
+</div></div>
 <input type="file" id="fileIn" accept="image/*" hidden>
 <div class="toast" id="toast"></div>
 
@@ -496,13 +515,14 @@ function renderCart() {
   $('#btnBook').disabled = ids.length === 0;
 
   const g = givenSel[stand];
-  const opts = [['exact', 'Passend'], [500, '5 €'], [1000, '10 €'], [2000, '20 €'], [5000, '50 €']];
-  $('#given').innerHTML = opts.map(([v, l]) => `<button data-given="${v}" class="${String(g) === String(v) ? 'sel' : ''}">${l}</button>`).join('');
+  $('#given').innerHTML = [100, 200, 500, 1000, 2000, 5000].map((v) => `<button data-add="${v}">+${v / 100} €</button>`).join('');
+  $('#given2').innerHTML = `<button data-given="exact" class="${g === 'exact' ? 'sel' : ''}">Passend</button><button data-given="pad">Betrag tippen</button><button data-given="reset">Korrektur</button>`;
   const ch = $('#change'); ch.classList.remove('bad');
-  if (g === null || !ids.length) ch.innerHTML = ids.length ? '<span style="color:var(--muted);font-size:14px">Gegeben? Antippen für Rückgeld</span>' : '';
+  const paid = typeof g === 'number' ? `<div class="paid"><span>Gegeben</span><b class="num">${eur(g)}</b></div>` : '';
+  if (g === null || !ids.length) ch.innerHTML = ids.length ? '<span style="color:var(--muted);font-size:14px">Scheine/Münzen antippen, mehrfach möglich</span>' : '';
   else if (g === 'exact') ch.innerHTML = 'Passend bezahlt';
-  else if (g >= total) ch.innerHTML = `Rückgeld: <b>${eur(g - total)}</b>`;
-  else { ch.classList.add('bad'); ch.innerHTML = `Es fehlen noch <b>${eur(total - g)}</b>`; }
+  else if (g >= total) ch.innerHTML = paid + `Rückgeld: <b>${eur(g - total)}</b>`;
+  else { ch.classList.add('bad'); ch.innerHTML = paid + `Es fehlen noch <b>${eur(total - g)}</b>`; }
 }
 function setQty(id, q) {
   const c = carts[stand];
@@ -538,10 +558,41 @@ $('#cartList').addEventListener('click', (e) => {
   setQty(id, b.dataset.act === 'inc' ? q + 1 : q - 1);
 });
 $('#given').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-given]'); if (!b) return;
-  const v = b.dataset.given === 'exact' ? 'exact' : Number(b.dataset.given);
-  givenSel[stand] = String(givenSel[stand]) === String(v) ? null : v;
+  const b = e.target.closest('[data-add]'); if (!b) return;
+  const g = givenSel[stand];
+  givenSel[stand] = (typeof g === 'number' ? g : 0) + Number(b.dataset.add);
   renderCart();
+});
+$('#given2').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-given]'); if (!b) return;
+  const v = b.dataset.given;
+  if (v === 'exact') givenSel[stand] = givenSel[stand] === 'exact' ? null : 'exact';
+  else if (v === 'reset') givenSel[stand] = null;
+  else if (v === 'pad') { openPad(); return; }
+  renderCart();
+});
+/* Ziffernblock für den gegebenen Betrag */
+let padStr = '';
+function padCents() { const n = parseFloat((padStr || '0').replace(',', '.')); return isFinite(n) ? Math.round(n * 100) : 0; }
+function renderPad() {
+  $('#padVal').textContent = (padStr || '0') + ' €';
+  const total = cartTotal(stand), c = padCents(), h = $('#padHint');
+  h.classList.toggle('bad', c > 0 && c < total);
+  h.innerHTML = !c ? 'Summe: ' + eur(total) : c >= total ? 'Rückgeld: <b>' + eur(c - total) + '</b>' : 'Es fehlen noch ' + eur(total - c);
+}
+function openPad() { padStr = ''; renderPad(); $('#pad').classList.add('open'); }
+$('#padKeys').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  const k = b.dataset.k || b.textContent;
+  if (k === 'del') padStr = padStr.slice(0, -1);
+  else if (k === ',') { if (!padStr.includes(',')) padStr = (padStr || '0') + ','; }
+  else if (!(padStr.includes(',') && padStr.split(',')[1].length >= 2) && padStr.length < 7) padStr = (padStr === '0' ? '' : padStr) + k;
+  renderPad();
+});
+$('#padNo').addEventListener('click', () => $('#pad').classList.remove('open'));
+$('#padOk').addEventListener('click', () => {
+  const c = padCents(); givenSel[stand] = c > 0 ? c : null;
+  $('#pad').classList.remove('open'); renderCart();
 });
 $('#btnClear').addEventListener('click', () => {
   carts[stand] = {}; givenSel[stand] = null; renderProducts(); renderCart();
